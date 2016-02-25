@@ -1,0 +1,22 @@
+
+<resources>
+	<color name="black">#000000</color>
+	<color name="grey">#FF999999</color>
+	<color name="lightgray">#FFe6e6e6</color>
+	<color name="red">#FF0000</color>
+	<color name="blue">#0000FF</color>
+	<color name="tealblue">#1345AF</color>
+	<color name="white">#FFffFFff</color>
+	<color name="skyblue">#6bc5e9</color>
+	<color name="darkgray">#FF555555</color>
+	<color name="navyBlue">#00529b</color>
+	<color name="offwhite">#f0fbfe</color>
+	<color name="topBannerBlue">#FF6998c2</color>
+	<color name="bg_topbar">#FF69c6e9</color>
+	<color name="bg_sub_topbar">#00529b</color>
+	<color name="bg_directions">#c5e4ff</color>
+	<color name="invisible">#00FFffFF</color>
+	<color name="caa_blue">#FF00529b</color>
+	<color name="green">#bbfdbb</color>
+	<color name="popup_blue">#689af7</color>
+</resources>
