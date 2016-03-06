@@ -4,5 +4,12 @@
     <string name="app_name">Handy</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_launch">Launch</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_profile">ProfileActivity</string>
+    <string name="title_activity_confirmation_sp">ConfirmationSP</string>
+    <string name="title_activity_srhome_search">SRHomeSearch</string>
+    <string name="title_activity_service_details">ServiceDetails</string>
+    <string name="title_activity_service_review">ServiceReview</string>
 
 </resources>
