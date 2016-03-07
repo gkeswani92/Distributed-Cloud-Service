@@ -1,12 +1,60 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="${relativePackage}.${activityClass}" >
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/contentPane"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
 
-    <TextView
-        android:layout_width="wrap_content"
+	<RelativeLayout
+	    android:id="@+id/linearLayout5"
+	    android:background="@color/background_purple"
+	    android:layout_width="fill_parent"
+	    android:layout_height="50dp" >
+
+		<TextView
+		    android:id="@+id/textViewTitle"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_centerHorizontal="true"
+		    android:layout_centerVertical="true"
+			android:text="Handy"
+			android:textStyle="bold"
+			android:textColor="@color/black"
+			android:textSize="30sp" />
+		
+	</RelativeLayout>
+
+  	<EditText
+    	android:id="@+id/editSearch"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
-
-</RelativeLayout>
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:paddingLeft="10dp"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:paddingRight="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/edittext_default_bg"
+        android:focusable="false"
+        android:focusableInTouchMode="true"
+        android:hint="Search Services"
+        android:imeOptions="actionSearch"
+        android:inputType="text" />
+  	
+	<ScrollView 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp">
+        
+       	<TableLayout
+       	    android:layout_height="wrap_content"
+       	    android:layout_width="match_parent"
+       	    android:id="@+id/messageTableLayout" >
+       	    
+       	</TableLayout>
+        
+    </ScrollView>
+       			
+</LinearLayout>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginBottom="5dp">
+    
+   	<RelativeLayout
+    	android:id="@+id/searchCell"
+    	android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:background="@drawable/message_center_read_background"
+    	android:clickable="true"
+    	android:paddingBottom="5dp"
+    	android:paddingTop="5dp" >
+        
+       	<LinearLayout
+        	android:id="@+id/linearLayoutSearchContent"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_marginRight="15dp"
+        	android:layout_marginLeft="15dp"
+        	android:orientation="vertical"
+        	android:duplicateParentState="true">
+        
+ 			<TextView
+ 		    	android:id="@+id/serviceName"
+ 		    	android:layout_width="wrap_content"
+ 		    	android:layout_height="wrap_content"
+ 		    	android:layout_marginBottom="5dp"
+ 		    	android:singleLine="true"
+ 		    	android:ellipsize="end"
+ 		    	android:text="Name: Bob the Gardner"
+ 		    	android:textColor="@drawable/selector_color_btn_black_white"
+ 		    	android:textSize="14sp"
+ 		    	android:duplicateParentState="true"
+ 		    	android:textStyle="bold" />
+ 			
+ 			<TextView
+ 		    	android:id="@+id/serviceType"
+ 		    	android:layout_width="wrap_content"
+ 		    	android:layout_height="wrap_content"
+ 		    	android:singleLine="true"
+ 		    	android:ellipsize="end"
+ 		    	android:text="Service Type: Gardening, Plumbing"
+ 		    	android:duplicateParentState="true"
+ 		    	android:textColor="@drawable/selector_color_btn_grey_white"
+ 				android:textSize="14sp" />
+ 		
+ 			<TextView
+ 		    	android:id="@+id/serviceCost"
+ 		    	android:layout_width="wrap_content"
+ 		    	android:layout_height="wrap_content"
+ 		    	android:singleLine="true"
+ 		    	android:ellipsize="end"
+ 		    	android:text="Cost: $1000/hr"
+ 		    	android:duplicateParentState="true"
+ 		    	android:textColor="@drawable/selector_color_btn_grey_white"
+ 				android:textSize="14sp" />
+ 			
+ 			<TextView
+ 		    	android:id="@+id/serviceAvailability"
+ 		    	android:layout_width="wrap_content"
+ 		    	android:layout_height="wrap_content"
+ 		    	android:singleLine="true"
+ 		    	android:ellipsize="end"
+ 		    	android:text="Service Availability: Never!!!"
+ 		    	android:duplicateParentState="true"
+ 		    	android:textColor="@drawable/selector_color_btn_grey_white"
+ 				android:textSize="14sp" />
+ 		 					
+ 		</LinearLayout>
+
+	</RelativeLayout>
+			
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:id="@+id/linearLayoutSpacing"
+        android:orientation="vertical">
+        
+    </LinearLayout>
+
+</LinearLayout>

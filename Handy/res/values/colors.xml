@@ -16,7 +16,8 @@
 	<color name="bg_sub_topbar">#00529b</color>
 	<color name="bg_directions">#c5e4ff</color>
 	<color name="invisible">#00FFffFF</color>
-	<color name="caa_blue">#FF00529b</color>
+	<color name="light_blue">#FF00529b</color>
 	<color name="green">#bbfdbb</color>
 	<color name="popup_blue">#689af7</color>
+	<color name="background_purple">#706ca8</color>
 </resources>
