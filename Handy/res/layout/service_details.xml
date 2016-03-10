@@ -49,7 +49,7 @@
        		<TextView
        	        android:layout_width="wrap_content"
        	        android:layout_height="wrap_content"
-       	        android:text="Cost: $1000/hr"
+       	        android:text="Cost: $60/hr"
        	        android:id="@+id/textViewCost"
        	        android:textSize="16sp"
        	        android:layout_marginBottom="10dp"

@@ -11,5 +11,6 @@
     <string name="title_activity_srhome_search">SRHomeSearch</string>
     <string name="title_activity_service_details">ServiceDetails</string>
     <string name="title_activity_service_review">ServiceReview</string>
+    <string name="spinner_prompt">Select a Type of Service</string>
 
 </resources>

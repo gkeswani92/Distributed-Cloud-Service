@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
         <activity
-            android:name=".LoginActivity"
+            android:name=".LaunchActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,13 +23,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.cornell.cs5412.handy.LaunchActivity"
+            android:name="com.cornell.cs5412.handy.LoginActivity"
            	android:configChanges="locale"
             android:launchMode="singleTop"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name="com.cornell.cs5412.handy.serviceprovider.ProfileActivity"
+            android:name="com.cornell.cs5412.handy.serviceprovider.SPProfile"
            	android:configChanges="locale"
             android:launchMode="singleTop"
             android:screenOrientation="portrait">
