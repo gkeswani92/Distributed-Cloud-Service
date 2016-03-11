@@ -16,12 +16,7 @@ public class LaunchActivity extends Activity {
 		setContentView(R.layout.launch);
 
 		// setup preference storage
-		//loadPreferences(LaunchActivity.this);
-		
-		/*if(Globals.sharedPrefs != null && Globals.sharedPrefs.contains("signedIn"))
-			intent = new Intent().setClass(Launch.this, HomeActivity.class);
-		else
-			intent = new Intent().setClass(Launch.this, LoginActivity.class);*/
+		loadPreferences(LaunchActivity.this);
 		
 		intent = new Intent().setClass(LaunchActivity.this, LoginActivity.class);
 
@@ -45,8 +40,8 @@ public class LaunchActivity extends Activity {
 	
 	public static void loadPreferences(Activity act)
 	{
-		//Globals.appPref = PreferenceManager.getDefaultSharedPreferences(act.getApplicationContext());
-		//Globals.prefEditor = Globals.appPref.edit();
+		Globals.appPref = PreferenceManager.getDefaultSharedPreferences(act.getApplicationContext());
+		Globals.prefEditor = Globals.appPref.edit();
 	}
 
 	public void onRestart() {

@@ -30,6 +30,7 @@ public class SRHomeSearch extends Activity
 	{
 		setContentView(R.layout.home_sr);
 		
+		// TODO: make a connection to server. Populate test data for now
 		searchResult = (TableLayout) findViewById(R.id.messageTableLayout);
 		searchResult.addView(createDirectionStepLayout("Name: Bob the Gardner", "Service Type: Gardening", "Cost: $60/hr", "Service Availability: Yes"));
 		searchResult.addView(createDirectionStepLayout("Name: Bob the Plumber", "Service Type: Plumbing", "Cost: $65/hr", "Service Availability: Yes"));
