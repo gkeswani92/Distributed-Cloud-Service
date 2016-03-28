@@ -1,5 +1,6 @@
 import clr
 import sys
+from System import Action
 #Append Python Library Path 
 sys.path.append('/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7')
 import os
@@ -29,6 +30,11 @@ def myViewFunc(v):
         print('  Leaving: ' + a.ToString() + ', isMyAddress='+a.isMyAddress().ToString())
     return
  
-#g.RegisterHandler(0, Vsync.Action[int](myfunc))
-#g.RegisterHandler(1, Vsync.Action[float](myRfunc))
+g.RegisterHandler(0, Action[int](myfunc))
+g.RegisterHandler(1, Action[float](myRfunc))
 g.RegisterViewHandler(Vsync.ViewHandler(myViewFunc))
+g.Join()
+g.Send(0,17)
+res = []
+nr = g.Query(Vsync.Group.ALL,1,98.8,Vsync.EOLMarker(),res)
+print('After Query got ' + nr.ToString() + ' results: ', res)
