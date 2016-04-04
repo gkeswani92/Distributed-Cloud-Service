@@ -22,8 +22,10 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.util.Base64;
 import android.util.Log;
 
@@ -103,7 +105,7 @@ public class DataTransfer
 		}
 	}
 	
-	public static JSONArray getJSONResult(final String url, final ArrayList<NameValuePair> params) throws Exception 
+	public static JSONObject getJSONResult(final String url, final ArrayList<NameValuePair> params) throws Exception 
 	{
 		final HttpClient client = new DefaultHttpClient();
 		final HttpGet httpGet = new HttpGet();
@@ -127,7 +129,6 @@ public class DataTransfer
 			HttpConnectionParams.setConnectionTimeout(httpGet.getParams(), timeoutConnection);
 			HttpConnectionParams.setSoTimeout(httpGet.getParams(), timeoutSocket);
 			
-			httpGet.setHeader("Authorization", "Bearer " + Globals.sharedPrefs.getString("access_token"));
 			httpGet.setURI(new URI(buffer.toString()));
 			response = client.execute(httpGet);
 			resEntity = response.getEntity();
@@ -137,8 +138,63 @@ public class DataTransfer
 				InputStream instream = resEntity.getContent();
 				String result = convertStreamToString(instream);
 				instream.close();
-				JSONArray jsonArray = new JSONArray(result);
-				return jsonArray;
+				JSONObject jsonObject = new JSONObject(result);
+				return jsonObject;
+			}
+			return null;
+		} 
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new Exception(e.getMessage());
+		}
+	}
+	
+	public static JSONObject postJSONResult(final String url, final ArrayList<NameValuePair> params) throws Exception 
+	{
+		final HttpClient client = new DefaultHttpClient();
+		final HttpPost httpPost = new HttpPost(url);
+
+		final HttpResponse responsePost;
+		final HttpEntity resEntity;
+
+		try
+		{
+			boolean DEBUG = true;
+			if (DEBUG) 
+			{
+				final StringBuffer buffer = new StringBuffer();
+				buffer.append(url + "?");
+
+				for (int i = 0; i < params.size(); i++) 
+				{
+					if (i != 0) 
+					{
+						buffer.append("&");
+					}
+					buffer.append(params.get(i).getName() + "="	+ params.get(i).getValue());
+				}
+				Log.d("Handy", "REQUEST URL in connection " + buffer.toString());
+			}
+
+			HttpConnectionParams.setConnectionTimeout(httpPost.getParams(), timeoutConnection);
+			// Set the default socket timeout (SO_TIMEOUT)
+			// in milliseconds which is the timeout for waiting for data.
+
+			HttpConnectionParams.setSoTimeout(httpPost.getParams(), timeoutSocket);
+			final UrlEncodedFormEntity ent = new UrlEncodedFormEntity(params, HTTP.UTF_8);
+			httpPost.setEntity(ent);
+			
+			responsePost = client.execute(httpPost);
+			resEntity = responsePost.getEntity();
+
+			if (resEntity != null) 
+			{
+				InputStream instream = resEntity.getContent();
+				String result = convertStreamToString(instream);
+				instream.close();
+				JSONObject jsonObject = new JSONObject(result);
+				return jsonObject;
 			}
 			return null;
 		} 

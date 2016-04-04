@@ -1,9 +1,16 @@
 package com.cornell.cs5412.handy;
 
+import java.util.ArrayList;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
+
 import com.cornell.cs5412.handy.serviceprovider.SPProfile;
 import com.cornell.cs5412.handy.servicereceiver.SRHomeSearch;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -25,6 +32,7 @@ public class LoginActivity extends Activity
 	private EditText edittextPassword;
 	private String username = "";
 	private String password = "";
+	private ProgressDialog progress;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
@@ -36,6 +44,8 @@ public class LoginActivity extends Activity
 	
 	public void setupScreen()
 	{
+		progress = new ProgressDialog(LoginActivity.this);
+		
 		radioGroupID = (RadioGroup) findViewById(R.id.radioGroupID);
 		radioButtonSP = (RadioButton) findViewById(R.id.radioButtonSP);
 		radioButtonSR = (RadioButton) findViewById(R.id.radioButtonSR);
@@ -56,28 +66,75 @@ public class LoginActivity extends Activity
 				}
 				else
 				{
-					int selectedId = radioGroupID.getCheckedRadioButtonId();
-				
-					if(selectedId == radioButtonSP.getId()) //login as service provider
-					{
-						// TODO: need to add authentication with the server with username/password
-						
-						Intent intent;
-						intent = new Intent().setClass(LoginActivity.this, SPProfile.class);
-						startActivity(intent);
-					} 
-					else if(selectedId == radioButtonSR.getId())// login as service receiver
-					{
-						// TODO: need to add authentication with the server username/password
-						
-						Intent intent;
-						intent = new Intent().setClass(LoginActivity.this, SRHomeSearch.class);
-						startActivity(intent);
-					}
-					else
-					{
-						Toast.makeText(LoginActivity.this, "There was an error!", Toast.LENGTH_SHORT).show();
-					}
+					final int selectedId = radioGroupID.getCheckedRadioButtonId();
+					Globals.showProgress(progress, "Loading...");
+					new Thread(new Runnable() {
+						@Override
+						public void run() 
+						{
+							try 
+							{
+					           	ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+					           	params.add(new BasicNameValuePair("username", username));
+					           	params.add(new BasicNameValuePair("password", password));
+					           	if(selectedId == radioButtonSP.getId())
+					           		params.add(new BasicNameValuePair("userType", "sp"));
+					           	else if(selectedId == radioButtonSR.getId())
+					           		params.add(new BasicNameValuePair("userType", "sr"));
+								        
+								final JSONObject json = DataTransfer.postJSONResult(Globals.ipAddress + "/authenticate", params);
+										
+								runOnUiThread(new Runnable() {
+									public void run()
+									{											
+										try
+										{
+											if (progress.isShowing())
+												progress.dismiss();
+											
+											if (json.optInt("status") == 0) // login successful
+											{
+												Globals.sharedPrefs.saveBoolean("loginComplete", true);
+												Intent intent = null;
+												if(selectedId == radioButtonSP.getId())
+													intent = new Intent().setClass(LoginActivity.this, SPProfile.class);
+												else if(selectedId == radioButtonSR.getId())
+													intent = new Intent().setClass(LoginActivity.this, SRHomeSearch.class);
+												intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+												startActivity(intent);
+											}
+											else
+											{
+												String error = json.optString("message");
+												Globals.showAlert("Error", error, LoginActivity.this);// show error message
+											}
+										}
+										catch(Exception e)
+										{
+											if (progress.isShowing())
+												progress.dismiss();
+											
+											e.printStackTrace();
+											Toast.makeText(LoginActivity.this, "An error has occurred!!", Toast.LENGTH_SHORT).show();
+										}
+									}
+								});
+							} 
+							catch (Exception e)
+							{
+								e.printStackTrace();
+								runOnUiThread(new Runnable() {
+									public void run()
+									{
+										if (progress.isShowing())
+											progress.dismiss();
+												
+										Globals.showAlert("Error", "There was an error with this transaction", LoginActivity.this);// show error message
+									}
+								});
+							}
+						}
+					}).start();
 				}
 			}
 		});

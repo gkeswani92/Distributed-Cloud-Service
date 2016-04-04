@@ -4,9 +4,40 @@ import json
 
 app = Flask(__name__)
 
+userDBSR = {'testUserSR': 'testPassword'}
+userDBSP = {'testUserSP': 'testPassword'}
+
 @app.route("/")
 def hello():
     return "Hello World!"
+
+# authenticate users
+@app.route("/authenticate",methods=['GET','POST'])
+def authUsers():
+    if request.method == 'GET':
+        username = request.args.get('username')
+        password = request.args.get('password')
+        userType = request.args.get('userType')
+    elif request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        userType = request.form.get('userType')
+
+    if userType == 'sr':
+        if username not in userDBSR:
+            return json.dumps({'status': 1, 'message':'User Not Exist'})
+        elif userDBSR[username] == password:
+            return json.dumps({'status': 0, 'message':'Login Success'})
+        else:
+            return json.dumps({'status': 1, 'message':'Login Invalid'})
+
+    if userType == 'sp':
+        if username not in userDBSP:
+            return json.dumps({'status': 1, 'message':'User Not Exist'})
+        elif userDBSP[username] == password:
+            return json.dumps({'status': 0, 'message':'Login Success'})
+        else:
+            return json.dumps({'status': 1, 'message':'Login Invalid'})
 
 
 # /users
