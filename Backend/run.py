@@ -39,6 +39,16 @@ def authUsers():
         else:
             return json.dumps({'status': 1, 'message':'Login Invalid'})
 
+# return two dummy services to the application to test connection
+@app.route("/getService",methods=['GET'])
+def getService():
+    reply = {}
+    data = []
+    data.append({'id':'1', 'name':'Bob the Gardner', 'type':'Gardening', 'cost':'60', 'availability':'yes'})
+    data.append({'id':'2', 'name':'Bob the Plumber', 'type':'Plumbing', 'cost':'65', 'availability':'yes'})
+    reply["status"] = 0
+    reply["data"] = data
+    return json.dumps(reply)
 
 # /users
 # GET: return a list of all users

@@ -11,10 +11,12 @@ import com.cornell.cs5412.handy.servicereceiver.SRHomeSearch;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -57,6 +59,9 @@ public class LoginActivity extends Activity
 			@Override
 			public void onClick(View v) 
 			{
+				final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(edittextPassword.getWindowToken(), 0);
+				
 				username = edittextUsername.getText().toString();
 				password = edittextPassword.getText().toString();
 				
@@ -94,12 +99,17 @@ public class LoginActivity extends Activity
 											
 											if (json.optInt("status") == 0) // login successful
 											{
-												Globals.sharedPrefs.saveBoolean("loginComplete", true);
 												Intent intent = null;
 												if(selectedId == radioButtonSP.getId())
+												{
+													Globals.sharedPrefs.saveBoolean("loginSPComplete", true);
 													intent = new Intent().setClass(LoginActivity.this, SPProfile.class);
+												}
 												else if(selectedId == radioButtonSR.getId())
+												{
+													Globals.sharedPrefs.saveBoolean("loginSRComplete", true);
 													intent = new Intent().setClass(LoginActivity.this, SRHomeSearch.class);
+												}
 												intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 												startActivity(intent);
 											}

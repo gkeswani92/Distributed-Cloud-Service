@@ -1,5 +1,8 @@
 package com.cornell.cs5412.handy;
 
+import com.cornell.cs5412.handy.serviceprovider.SPProfile;
+import com.cornell.cs5412.handy.servicereceiver.SRHomeSearch;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,8 +21,13 @@ public class LaunchActivity extends Activity {
 		// setup preference storage
 		loadPreferences(LaunchActivity.this);
 		
-		intent = new Intent().setClass(LaunchActivity.this, LoginActivity.class);
-
+		if (Globals.sharedPrefs.getBoolean("loginSPComplete"))
+			intent = new Intent().setClass(LaunchActivity.this, SPProfile.class);
+		else if (Globals.sharedPrefs.getBoolean("loginSRComplete"))
+			intent = new Intent().setClass(LaunchActivity.this, SRHomeSearch.class);
+		else
+			intent = new Intent().setClass(LaunchActivity.this, LoginActivity.class);
+		
 		int timer = 3000;
 		new CountDownTimer(timer, 1000) {
 

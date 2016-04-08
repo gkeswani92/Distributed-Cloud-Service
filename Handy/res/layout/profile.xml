@@ -57,9 +57,32 @@
        	    
        	    <Spinner
        	        android:id="@+id/spinnerServiceType"
-       	        android:layout_marginBottom="10dp"
        	        android:layout_width="match_parent"
-       	        android:layout_height="wrap_content" />
+       	        android:layout_height="wrap_content"
+       	        android:layout_marginBottom="10dp" />
+       	    
+       	  	<TextView
+       	        android:layout_width="wrap_content"
+       	        android:layout_height="wrap_content"
+       	        android:text="Service Name:"
+       	        android:textSize="16sp"
+       	        android:layout_marginBottom="10dp"
+       	        android:textColor="@color/black"
+       	        android:textStyle="bold"/>
+       	  	
+       	  	<EditText
+        		android:layout_width="match_parent"
+        		android:layout_height="wrap_content"
+        		android:ellipsize="end"
+        		android:maxLines="1"
+        		android:textColor="@color/black"
+        		android:background="@drawable/edittext_default_bg"
+        		android:layout_marginBottom="10dp"
+        		android:id="@+id/edittextName"
+        		android:paddingLeft="10dp"
+        		android:paddingRight="10dp"
+        		android:inputType="text"
+        		android:hint="service name"/>
        	    
        	  	<TextView
        	        android:layout_width="wrap_content"
@@ -75,6 +98,7 @@
         		android:layout_height="wrap_content"
         		android:ellipsize="end"
         		android:maxLines="1"
+        		android:textColor="@color/black"
         		android:background="@drawable/edittext_default_bg"
         		android:layout_marginBottom="10dp"
         		android:id="@+id/edittextLocation"
@@ -97,6 +121,7 @@
         		android:layout_height="wrap_content"
         		android:ellipsize="end"
         		android:maxLines="1"
+        		android:textColor="@color/black"
         		android:background="@drawable/edittext_default_bg"
         		android:layout_marginBottom="10dp"
         		android:id="@+id/edittextRadius"
@@ -120,6 +145,7 @@
         		android:layout_marginBottom="10dp"
         		android:ellipsize="end"
         		android:maxLines="1"
+        		android:textColor="@color/black"
         		android:background="@drawable/edittext_default_bg"
         		android:id="@+id/edittextCost"
         		android:paddingLeft="10dp"
@@ -143,6 +169,7 @@
 				android:background="@drawable/edittext_default_bg"
 				android:gravity="top|left"
 				android:padding="10dp"
+				android:textColor="@color/black"
 				android:layout_marginBottom="10dp"
 				android:hint="Description about this service"
 				android:id="@+id/editTextDescription" />
@@ -151,7 +178,7 @@
 			    android:layout_height="wrap_content"
 			    android:layout_width="match_parent"
 			    android:layout_marginBottom="10dp"
-			    android:text="Submit"
+			    android:text="Save"
 			    android:id="@+id/btnSubmit"/>
        	    
        	</LinearLayout>
