@@ -2,10 +2,19 @@ package com.cornell.cs5412.handy.serviceprovider;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
+
+import com.cornell.cs5412.handy.DataTransfer;
 import com.cornell.cs5412.handy.Globals;
 import com.cornell.cs5412.handy.R;
+
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -27,17 +36,19 @@ public class SPProfile extends Activity
 	private Button btnSubmit;
 	private Spinner spinnerServiceType;
 	private Switch switchAvailability;
+	private ProgressDialog progress;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.profile);
-		setupScreen();
 	}
 	
 	public void setupScreen()
 	{
+		setContentView(R.layout.profile);
+		progress = new ProgressDialog(this);
+		
 		edittextName = (EditText) findViewById(R.id.edittextName);
 		edittextLocation = (EditText) findViewById(R.id.edittextLocation);
 		edittextRadius = (EditText) findViewById(R.id.edittextRadius);
@@ -64,11 +75,12 @@ public class SPProfile extends Activity
 			@Override
 			public void onClick(View v) 
 			{
-				String name = edittextName.getText().toString();
-				String location = edittextLocation.getText().toString();
-				String radius = edittextRadius.getText().toString();
-				String cost = edittextCost.getText().toString();
-				String description = editTextDescription.getText().toString();
+				final String name = edittextName.getText().toString();
+				final String location = edittextLocation.getText().toString();
+				final String radius = edittextRadius.getText().toString();
+				final String cost = edittextCost.getText().toString();
+				final String description = editTextDescription.getText().toString();
+				final String type = spinnerServiceType.getSelectedItem().toString();
 				int selectServiceType = spinnerServiceType.getSelectedItemPosition();
 				if(name.equalsIgnoreCase("") || location.equalsIgnoreCase("") || radius.equalsIgnoreCase("") || cost.equalsIgnoreCase("") || selectServiceType == 0)
 				{
@@ -76,9 +88,97 @@ public class SPProfile extends Activity
 				}
 				else
 				{
-					if (switchAvailability.isChecked()) // upload to server
+					if (switchAvailability.isChecked() && !Globals.sharedPrefs.getBoolean("servicePosted")) // upload to server
 					{
-						
+						Globals.showProgress(progress, "Loading...");
+						Thread t2 = new Thread(new Runnable() {
+							public void run()
+							{
+								try
+								{
+									ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+									params.add(new BasicNameValuePair("name", name));
+									params.add(new BasicNameValuePair("type", type));
+									params.add(new BasicNameValuePair("location", location));
+									params.add(new BasicNameValuePair("radius", radius));
+									params.add(new BasicNameValuePair("cost", cost));
+									params.add(new BasicNameValuePair("description", description));
+									
+									final JSONObject json = DataTransfer.postJSONResult(Globals.ipAddress + "/postService", params);
+
+									runOnUiThread(new Runnable(){
+										public void run()
+										{
+											if (progress.isShowing())
+												progress.dismiss();
+											
+											if(json.optString("message").equalsIgnoreCase("success"))
+											{
+												Globals.sharedPrefs.saveBoolean("servicePosted", true);
+												Globals.sharedPrefs.saveString("serviceID", json.optString("serviceID"));
+												Globals.showAlert("Success", "Your service has been posted! We will notify you if someone requests for it.", SPProfile.this);
+											}
+										}
+									});
+								}
+								catch (Exception e)
+								{
+									runOnUiThread(new Runnable(){
+										public void run()
+										{
+											if (progress.isShowing())
+												progress.dismiss();
+												
+											Globals.showAlert("Error", "An error has occurred. Please try again.", SPProfile.this);
+										}
+									});
+								}
+							}	
+						});
+						t2.start();
+					}
+					else if (!switchAvailability.isChecked() && Globals.sharedPrefs.getBoolean("servicePosted")) // send remove request to server
+					{
+						Globals.showProgress(progress, "Loading...");
+						Thread t2 = new Thread(new Runnable() {
+							public void run()
+							{
+								try
+								{
+									ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+									params.add(new BasicNameValuePair("serviceID", Globals.sharedPrefs.getString("serviceID")));
+									
+									final JSONObject json = DataTransfer.postJSONResult(Globals.ipAddress + "/deleteService", params);
+
+									runOnUiThread(new Runnable(){
+										public void run()
+										{
+											if (progress.isShowing())
+												progress.dismiss();
+											
+											if(json.optString("message").equalsIgnoreCase("success"))
+											{
+												Globals.sharedPrefs.saveBoolean("servicePosted", false);
+												Globals.showAlert("Success", "Your service has been removed!", SPProfile.this);
+											}
+										}
+									});
+								}
+								catch (Exception e)
+								{
+									runOnUiThread(new Runnable(){
+										public void run()
+										{
+											if (progress.isShowing())
+												progress.dismiss();
+												
+											Globals.showAlert("Error", "An error has occurred. Please try again.", SPProfile.this);
+										}
+									});
+								}
+							}	
+						});
+						t2.start();
 					}
 					else // save info locally
 					{

@@ -137,7 +137,7 @@ public class SRHomeSearch extends Activity
 				// shift the user to a new activity viewing the details of the message
 				Intent intent = new Intent().setClass(SRHomeSearch.this, ServiceDetails.class);
 				startActivity(intent);
-				finish();
+				//finish();
 		    }
 		});
 		
