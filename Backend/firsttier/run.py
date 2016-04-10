@@ -4,14 +4,21 @@ import json
 
 app = Flask(__name__)
 
+# setup some global variables and stub data
 userDBSR = {'testUserSR': 'testPassword'}
 userDBSP = {'testUserSP': 'testPassword'}
+serviceID = 1;
+serviceData = []
+serviceData.append({'id':'1', 'name':'Bob the Gardner', 'type':'Gardening', 'location':'test location', 'radius':'25', 'cost':'60', 'description':'My name is Bob', 'availability':'yes'})
+serviceData.append({'id':'2', 'name':'Bob the Plumber', 'type':'Plumbing', 'location':'test location', 'radius':'25', 'cost':'65', 'description':'My name is Bob', 'availability':'yes'})
+serviceID += 1
+serviceID += 1
 
 @app.route("/")
 def hello():
     return "Hello World!"
 
-# authenticate users
+# authenticate users - stub created by Andy
 @app.route("/authenticate",methods=['GET','POST'])
 def authUsers():
     if request.method == 'GET':
@@ -39,15 +46,48 @@ def authUsers():
         else:
             return json.dumps({'status': 1, 'message':'Login Invalid'})
 
-# return two dummy services to the application to test connection
+# return two dummy services to the application to test connection - stub created by Andy
 @app.route("/getService",methods=['GET'])
 def getService():
     reply = {}
-    data = []
-    data.append({'id':'1', 'name':'Bob the Gardner', 'type':'Gardening', 'cost':'60', 'availability':'yes'})
-    data.append({'id':'2', 'name':'Bob the Plumber', 'type':'Plumbing', 'cost':'65', 'availability':'yes'})
     reply["status"] = 0
-    reply["data"] = data
+    reply["data"] = serviceData
+    return json.dumps(reply)
+
+# accept post service request and stores it in memory - stub created by Andy
+@app.route("/postService",methods=['POST'])
+def postService():
+    name = request.form.get('name')
+    type = request.form.get('type')
+    location = request.form.get('location')
+    radius = request.form.get('radius')
+    cost = request.form.get('cost')
+    description = request.form.get('description')
+    serviceObj = {}
+    serviceObj["id"] = serviceID    
+    serviceObj["name"] = name
+    serviceObj["type"] = type
+    serviceObj["location"] = location
+    serviceObj["radius"] = radius
+    serviceObj["cost"] = cost
+    serviceObj["description"] = description
+    serviceObj["availability"] = "yes"
+    serviceData.append(serviceObj)
+    serviceID += 1
+    reply = {}
+    reply["status"] = 0
+    reply["message"] = "success"
+    reply["serviceID"] = serviceID
+    return json.dumps(reply)
+
+# remove service from availability list when it is declared off on device - stub created by Andy
+@app.route("/deleteService",methods=['POST'])
+def deleteService():
+    id = request.form.get('serviceID')
+    # insert logic here to delete the service object
+    reply = {}
+    reply["status"] = 0
+    reply["message"] = "success"
     return json.dumps(reply)
 
 # /users
