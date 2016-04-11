@@ -9,8 +9,8 @@ userDBSR = {'testUserSR': 'testPassword'}
 userDBSP = {'testUserSP': 'testPassword'}
 serviceID = 1;
 serviceData = []
-serviceData.append({'id':'1', 'name':'Bob the Gardner', 'type':'Gardening', 'location':'test location', 'radius':'25', 'cost':'60', 'description':'My name is Bob', 'availability':'yes'})
-serviceData.append({'id':'2', 'name':'Bob the Plumber', 'type':'Plumbing', 'location':'test location', 'radius':'25', 'cost':'65', 'description':'My name is Bob', 'availability':'yes'})
+serviceData.append({'id':'1', 'name':'Bob the Gardner', 'type':'Gardening', 'location':'test location', 'radius':'25', 'cost':'60', 'description':'My name is Bob', 'rating': "-1", 'availability':'yes'})
+serviceData.append({'id':'2', 'name':'Bob the Plumber', 'type':'Plumbing', 'location':'test location', 'radius':'25', 'cost':'65', 'description':'My name is Bob', 'rating': "4", 'availability':'yes'})
 serviceID += 1
 serviceID += 1
 
@@ -52,6 +52,17 @@ def getService():
     reply = {}
     reply["status"] = 0
     reply["data"] = serviceData
+    return json.dumps(reply)
+
+# return the details of a particular service - stub created by Andy
+@app.route("/getServiceDetails",methods=['GET'])
+def getServiceDetails():
+    id = request.args.get('serviceID')
+    # insert logic here to find the service object given ID
+    # for now, I will always return the first service as stub
+    reply = {}
+    reply["status"] = 0
+    reply["data"] = serviceData[0]
     return json.dumps(reply)
 
 # accept post service request and stores it in memory - stub created by Andy

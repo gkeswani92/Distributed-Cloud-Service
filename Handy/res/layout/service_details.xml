@@ -1,89 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/contentPane"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/white"
-    android:orientation="vertical" >
+    android:background="@color/layout_purple"
+    android:orientation="vertical">
 
-	<RelativeLayout
-	    android:id="@+id/linearLayout5"
-	    android:background="@color/background_purple"
-	    android:layout_width="fill_parent"
-	    android:layout_height="50dp" >
+    <RelativeLayout
+        android:id="@+id/linearLayout5"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:background="@color/background_purple" >
 
-		<TextView
-		    android:id="@+id/textViewTitle"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_centerHorizontal="true"
-		    android:layout_centerVertical="true"
-			android:text="Handy"
-			android:textStyle="bold"
-			android:textColor="@color/black"
-			android:textSize="30sp" />
-		
-	</RelativeLayout>
+        <TextView
+            android:id="@+id/textViewTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="Handy"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
 
-	<ScrollView 
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:id="@+id/linearLayoutContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textViewServiceName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text=""
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewServicetype"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text=""
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewCost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text=""
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewrating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text=""
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text=""
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnRequest"
+                android:layout_marginBottom="10dp"
+                android:visibility="invisible"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Request Service" />
+            
+          	<Button
+                android:id="@+id/btnSubmitReview"
+                android:layout_marginBottom="10dp"
+                android:visibility="invisible"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Submit a Review" />
         
-       	<LinearLayout
-       	    android:layout_height="wrap_content"
-       	    android:layout_width="match_parent"
-       	    android:orientation="vertical"
-       	    android:layout_margin="10dp"
-       	    android:id="@+id/linearLayoutContent">
-       	    
-       	  	<TextView
-       	        android:layout_width="wrap_content"
-       	        android:layout_height="wrap_content"
-       	        android:text="Type of Service: Gardening"
-       	        android:id="@+id/textViewServicetype"
-       	        android:textSize="16sp"
-       	        android:layout_marginBottom="10dp"
-       	        android:textColor="@color/black"
-       	        android:textStyle="bold"/>
-       	  	
-       		<TextView
-       	        android:layout_width="wrap_content"
-       	        android:layout_height="wrap_content"
-       	        android:text="Cost: $60/hr"
-       	        android:id="@+id/textViewCost"
-       	        android:textSize="16sp"
-       	        android:layout_marginBottom="10dp"
-       	        android:textColor="@color/black"
-       	        android:textStyle="bold"/>
-       		
-     		<TextView
-       	        android:layout_width="wrap_content"
-       	        android:layout_height="wrap_content"
-       	        android:text="Rating: 3.5/5.0"
-       	        android:id="@+id/textViewrating"
-       	        android:textSize="16sp"
-       	        android:layout_marginBottom="10dp"
-       	        android:textColor="@color/black"
-       	        android:textStyle="bold"/>
-     	
-    		<TextView
-       	        android:layout_width="wrap_content"
-       	        android:layout_height="wrap_content"
-       	        android:text="Description: testing testing testing"
-       	        android:id="@+id/textViewDescription"
-       	        android:textSize="16sp"
-       	        android:layout_marginBottom="10dp"
-       	        android:textColor="@color/black"
-       	        android:textStyle="bold"/>
-    	
-    		<Button 
-    		    android:layout_width="match_parent"
-    		    android:layout_height="wrap_content"
-    		    android:id="@+id/btnRequest"
-    		    android:text="Request Service"/>
-       	    
-       	</LinearLayout>
+        </LinearLayout>
         
     </ScrollView>
-       			
+
 </LinearLayout>

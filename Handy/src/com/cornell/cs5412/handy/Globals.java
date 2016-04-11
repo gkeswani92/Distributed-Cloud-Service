@@ -10,7 +10,7 @@ import android.location.LocationManager;
 
 public class Globals 
 {
-	public static String ipAddress = "http://52.23.250.73:5000";
+	public static String ipAddress = "http://54.85.179.199:5000";
 	public static SharedPreferences appPref;	
 	public static SharedPreferences.Editor prefEditor;
 	public static SharedPrefsHelper sharedPrefs;

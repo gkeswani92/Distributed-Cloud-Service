@@ -77,8 +77,9 @@ public class SRHomeSearch extends Activity
 									String name = serviceObj.optString("name");
 									String type = serviceObj.optString("type");
 									String cost = serviceObj.optString("cost");
+									String id = serviceObj.optString("id");
 									String availability = serviceObj.optString("availability");
-									searchResult.addView(createDirectionStepLayout(name, type, cost, availability));
+									searchResult.addView(createDirectionStepLayout(id, name, type, cost, availability));
 								}
 								catch (Exception e)
 								{
@@ -105,7 +106,7 @@ public class SRHomeSearch extends Activity
 		t2.start();
 	}
 	
-	public LinearLayout createDirectionStepLayout(final String name, final String type, final String cost, final String availability)
+	public LinearLayout createDirectionStepLayout(final String id, final String name, final String type, final String cost, final String availability)
 	{
 		final LayoutInflater inflater = this.getLayoutInflater();
 		final LinearLayout linearLayout = (LinearLayout) inflater.inflate(R.layout.table_cell_search_result, null);
@@ -136,8 +137,8 @@ public class SRHomeSearch extends Activity
 		    {
 				// shift the user to a new activity viewing the details of the message
 				Intent intent = new Intent().setClass(SRHomeSearch.this, ServiceDetails.class);
+				intent.putExtra("serviceID", id);
 				startActivity(intent);
-				//finish();
 		    }
 		});
 		
