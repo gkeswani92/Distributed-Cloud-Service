@@ -1,42 +1,21 @@
-import clr
 import sys
-import Vsync
+# import subprocess
+from System.Diagnostics import Process
 
-from System import Action
+def startSystem(numGroup,numServPerGroup):
+    for i in range(1,numGroup+1):
+        p = Process()
+        p.StartInfo.UseShellExecute = False
+        p.StartInfo.RedirectStandardOutput = True
+        dir(p)
+        p.StartInfo.FileName = 'ipy'
+        p.StartInfo.Arguments = './startGroup.py ' + str(i)
+        p.Start()
 
-#Append Python Library Path 
-sys.path.append('/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7')
-import os
-#Append the Resources folder that has Vsync.dll
-sys.path.append(os.getcwd()+'/../Resources')
-clr.AddReference('Vsync.dll')
+        #subprocess.Popen(['ipy','startGroup.py',str(i)])
 
-Vsync.VsyncSystem.Start() # start Vsync system
-g = Vsync.Group("group1") # create a Vsync Group
-
-def myfunc(i):
-    print('Hello from myfunc with i=' + i.ToString())
-    return
-
-def myRfunc(r):
-    print('Hello from myRfunc with r=' + r.ToString())
-    group.Reply(-1)
-    return
-
-def myViewFunc(v):
-    print('New view: ' + v.ToString())
-    print ('My rank = ' + v.GetMyRank().ToString())
-    for a in v.joiners:
-        print('  Joining: ' + a.ToString() + ', isMyAddress='+a.isMyAddress().ToString())
-    for a in v.leavers:
-        print('  Leaving: ' + a.ToString() + ', isMyAddress='+a.isMyAddress().ToString())
-    return
- 
-g.RegisterHandler(0, Action[int](myfunc))
-g.RegisterHandler(1, Action[float](myRfunc))
-g.RegisterViewHandler(Vsync.ViewHandler(myViewFunc))
-g.Join()
-g.Send(0,17)
-res = []
-nr = g.Query(Vsync.Group.ALL,1,98.8,Vsync.EOLMarker(),res)
-print('After Query got ' + nr.ToString() + ' results: ', res)
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print "Usage: ipy start.py NUMBER_OF_GROUP NUMBER_OF_SERVER_PER_GROUP"
+    else:
+        startSystem(int(sys.argv[1]),int(sys.argv[2]))
