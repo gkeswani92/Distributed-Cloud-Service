@@ -1,6 +1,8 @@
 import clr, sys
 from System import Action
-sys.path.append('/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.6') #Append Python Library Path 
+
+sys.path.append('/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.6') #Append Python Library Path
+
 import os
 from threading import Thread, Lock, Condition
 from SimpleXMLRPCServer import SimpleXMLRPCServer,SimpleXMLRPCRequestHandler
@@ -14,22 +16,31 @@ class MasterServer(Thread):
         Thread.__init__(self)
         self.id = id
         self.name = "master%s"%id
-        self.group_name = "group%s"%id
+        self.group_name = "group"
 
-        self.server = SimpleXMLRPCServer(("localhost", 8000 + id))
+        self.server = SimpleXMLRPCServer(("localhost", 8000 + int(id)))
         self.server.register_introspection_functions()
         self.server.register_function(self.checkPassword, 'checkPassword')
+        self.server.register_function(self.welcome_page, 'welcome_page')
 
         self.group = Vsync.Group(self.group_name)
         self.group.RegisterViewHandler(Vsync.ViewHandler(self.report))
         self.group.RegisterHandler(1, Action[str, str](self.authUser))
         self.group.Join()
 
+    def welcome_page(self):
+        return "Welcome to Handy"
+
     def checkPassword(self,username,password):
         print "RPC call to check username,password"
         print "username: %s" % username
         print "password: %s" % password
         return self.authUser(username,password)
+
+    def authUser(self,username,password):
+        #This should involve a call to the VSync DHT
+        print "Asking my group."
+        return username == "Natch" and password == "Password"
 
     def report(self,v):
         print('New view: ' + v.ToString())
@@ -39,10 +50,6 @@ class MasterServer(Thread):
         for a in v.leavers:
             print('  Leaving: ' + a.ToString() + ', isMyAddress='+a.isMyAddress().ToString())
         return
-
-    def authUser(self,username,password):
-        print "Asking my group"
-        return username == "Natch" and password == "Password"
 
     def run(self):
         print "===================="

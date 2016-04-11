@@ -1,18 +1,22 @@
 import sys
-# import subprocess
 from System.Diagnostics import Process
 
 def startSystem(numGroup,numServPerGroup):
-    for i in range(1,numGroup+1):
+    for i in range(1,numServPerGroup+1):
         p = Process()
         p.StartInfo.UseShellExecute = False
         p.StartInfo.RedirectStandardOutput = True
         dir(p)
+
+        #Starting master server using an iron python process
         p.StartInfo.FileName = 'ipy'
-        p.StartInfo.Arguments = './startGroup.py ' + str(i)
+        p.StartInfo.Arguments = './masterServer.py ' + str(i)
         p.Start()
 
-        #subprocess.Popen(['ipy','startGroup.py',str(i)])
+        #Starting the flask server using a python process
+        p.StartInfo.FileName = 'python'
+        p.StartInfo.Arguments = './client.py ' + str(i)
+        p.Start()
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
