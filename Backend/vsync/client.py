@@ -51,7 +51,7 @@ def testput():
 
 @app.route("/testget")
 def testget():
-    return "Result from DHTGet: %s" % proxy.getDHT("Gaurav")
+    return "Result from DHTGet: {0} on flask port {1}".format(proxy.getDHT("Gaurav"),flask_port)
 
 
 
