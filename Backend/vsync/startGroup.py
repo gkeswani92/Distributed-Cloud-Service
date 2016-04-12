@@ -14,9 +14,13 @@ def startSystem(numGroup,numServPerGroup):
         p.Start()
 
         #Starting the flask server using a python process
-        p.StartInfo.FileName = 'python'
-        p.StartInfo.Arguments = 'client.py ' + str(i)
-        p.Start()
+    p.StartInfo.FileName = 'python'
+    p.StartInfo.Arguments = 'client.py ' + str(1)
+    p.Start()
+
+    p.StartInfo.FileName = 'python'
+    p.StartInfo.Arguments = 'client.py ' + str(2)
+    p.Start()
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
