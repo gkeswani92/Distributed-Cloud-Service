@@ -13,18 +13,20 @@ clr.AddReference('Vsync.dll')
 import Vsync
 
 class MasterServer(Thread):
+
     def __init__(self,id):
         Thread.__init__(self)
         self.id = id
         self.name = "master%s"%id
         self.group_name = "group"
 
-        self.server = SimpleXMLRPCServer(("localhost", 8000 + int(id)))
+        print "Running RPC Server on port %s" % (9000+id)
+        self.server = SimpleXMLRPCServer(("localhost", 9000 + id))
         self.server.register_introspection_functions()
-        self.server.register_function(self.checkPassword, 'checkPassword')
-        self.server.register_function(self.welcome_page, 'welcome_page')
-        self.server.register_function(self.getDHT,'getDHT')
-        self.server.register_function(self.putDHT,'putDHT')
+        self.server.register_function(self.putDHT)
+        self.server.register_function(self.checkPassword)
+        self.server.register_function(self.welcome_page)
+        self.server.register_function(self.getDHT)
 
         self.group = Vsync.Group(self.group_name)
         self.dht = self.group.DHT()
