@@ -4,6 +4,7 @@ from flask import Flask
 
 #Proxy server used for RPC communication between the flask process and Master server
 proxy = 0
+flask_port = 0
 app = Flask(__name__)
 
 def initializeRPC(id):
@@ -27,6 +28,7 @@ def startFlaskServer(id):
         at "0.0.0.0:(5000+id)"
     '''
     #Connect RPC tunnel to send requests to the correct address and port
+    global flask_port
     rpc_flag = initializeRPC(id)
 
     if rpc_flag:
@@ -40,23 +42,17 @@ def startFlaskServer(id):
 
 @app.route("/")
 def hello():
-    return "Hello ... I got called"
-    #proxy.putDHT("TestKey","TestValue")
-    #return str(flask_port) + "Result from DHTGet: %s" % proxy.getDHT("TestKey")
-    #return proxy.welcome_page();
+    return "Hello! You are currently connected to flask port: {0}".format(str(flask_port))
 
 @app.route("/testput")
 def testput():
-    #print "Hello ... I got called"
-    proxy.putDHT("Guarav","Tanvi")
-    #return str(flask_port) + "Result from DHTGet: %s" % proxy.getDHT("TestKey")
+    proxy.putDHT("Gaurav","Tanvi")
     return "DHTPut called"
+
 @app.route("/testget")
 def testget():
-    #print "Hello ... I got called"
-    #proxy.putDHT("TestKey","TestValue")
-    return "Result from DHTGet: %s" % proxy.getDHT("Guarav")
-    #return proxy.welcome_page();
+    return "Result from DHTGet: %s" % proxy.getDHT("Gaurav")
+
 
 
 if __name__ == "__main__":
