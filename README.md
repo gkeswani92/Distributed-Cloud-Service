@@ -75,3 +75,33 @@ Ping the EC2 instance/localhost from your browser depending on where the applica
 ```
 https://localhost:8080
 ```
+
+###HTTP Load Testing
+Install go
+```
+mkdir $HOME/Go
+mkdir -p $HOME/Go/src/github.com/user
+
+export GOPATH=$HOME/Go
+export GOROOT=/usr/local/opt/go/libexec
+export PATH=$PATH:$GOPATH/bin
+export PATH=$PATH:$GOROOT/bin
+
+brew install go
+
+go get golang.org/x/tools/cmd/godoc
+go get golang.org/x/tools/cmd/vet
+```
+
+Install vegeta 
+```
+brew update && brew install vegeta
+go get -u github.com/tsenart/vegeta
+```
+
+Load test:
+```
+echo "GET http://ec2-54-165-216-78.compute-1.amazonaws.com/testget" | vegeta attack -duration=15s | tee results.bin | vegeta report
+cat results.bin | vegeta report -reporter=plot > plot.html
+open plot.html
+```
