@@ -13,7 +13,7 @@ def initializeRPC(id):
     '''
     global proxy
     try:
-        port = 8000 + int(id)
+        port = 9000 + int(id)
         address = "http://localhost:{0}/".format(port)
         proxy = xmlrpclib.ServerProxy(address)
         return True
@@ -40,8 +40,10 @@ def startFlaskServer(id):
 
 @app.route("/")
 def hello():
-    return str(flask_port)
+    proxy.putDHT("TestKey","TestValue")
+    return str(flask_port) + "Result from DHTGet: %s" % proxy.getDHT("TestKey")
     #return proxy.welcome_page();
+
 
 if __name__ == "__main__":
     startFlaskServer(sys.argv[1])
