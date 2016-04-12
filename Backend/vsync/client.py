@@ -16,10 +16,10 @@ def initializeRPC(id):
         port = 8000 + int(id)
         address = "http://localhost:{0}/".format(port)
         proxy = xmlrpclib.ServerProxy(address)
-        return true
+        return True
     except Exception as e:
         print("Could not establish RPC tunnel to proxy")
-        return false
+        return False
 
 def startFlaskServer(id):
     '''

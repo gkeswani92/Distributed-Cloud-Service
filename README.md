@@ -6,7 +6,44 @@ For this project, we will build an application that acts as a middleman by conne
  We plan to use the cloud to store user (both service providers and customer) data and facilitate communication between them.
 
 ##Dependencies
+###Git
+```
+sudo apt-get install git
+git clone https://github.com/gkeswani92/Peer-To-Peer-Market-Place.git
+```
+
 ###Flask
 ```
+apt-get install python-pip
 pip install flask
 ```
+
+###HAProxy
+```
+sudo apt-get install haproxy
+```
+
+###Change HAProxy configuration file 
+```
+cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg_orig
+cat /dev/null > /etc/haproxy/haproxy.cfg
+vi /etc/haproxy/haproxy.cfg
+```
+
+###Set HAProxy to run by default
+```
+vi /etc/default/haproxy
+Set ENABLED=0 to ENABLED = 1
+```
+
+###Mono and Iron Python
+```
+sudo apt-get install mono-complete
+git clone git://github.com/IronLanguages/main.git IronLanguages
+cd IronLanguages
+xbuild Solutions/IronPython.sln /p:Configuration=Release
+
+Add alias ipy="mono IronLanguages/bin/Release/ipy.exe” to .bashrc
+. ~/.bashrc
+```
+
