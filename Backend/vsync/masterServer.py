@@ -8,7 +8,8 @@ import os
 from threading import Thread, Lock, Condition
 from SimpleXMLRPCServer import SimpleXMLRPCServer,SimpleXMLRPCRequestHandler
 
-sys.path.append(os.getcwd()+'/../../Resources') #Append the Resources folder that has Vsync.dll
+#Append the Resources folder that has Vsync.dll
+sys.path.append(os.getcwd()+'/../../Resources')
 clr.AddReference('Vsync.dll')
 import Vsync
 
@@ -23,14 +24,22 @@ class MasterServer(Thread):
         print "Running RPC Server on port %s" % (9000+id)
         self.server = SimpleXMLRPCServer(("localhost", 9000 + id))
         self.server.register_introspection_functions()
+
+        #Registering functions to the RPC tunnel
         self.server.register_function(self.putDHT)
         self.server.register_function(self.checkPassword)
         self.server.register_function(self.welcome_page)
         self.server.register_function(self.getDHT)
 
+        #Initializing/joining a vsync group and its DHT
         self.group = Vsync.Group(self.group_name)
         self.dht = self.group.DHT()
-        self.group.DHTEnable(2,10,15) #MIN 5
+
+        #First param should be a factor of the tast 2
+        #Params are replication factor, expected group size, min group size
+        self.group.DHTEnable(2,4,4)
+
+        #Registering functions that can be called on the VSync group
         self.group.RegisterViewHandler(Vsync.ViewHandler(self.report))
         self.group.RegisterHandler(1, Action[str, str](self.authUser))
         self.group.Join()

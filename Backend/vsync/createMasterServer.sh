@@ -1,6 +1,6 @@
-mono /home/ubuntu/IronLanguages/Util/IronPython/ipy.exe masterServer.py 1
+mono /home/ubuntu/IronLanguages/Util/IronPython/ipy.exe /home/ubuntu/Peer-To-Peer-Market-Place/Backend/vsync/masterServer.py 1
 sleep 20
-mono /home/ubuntu/IronLanguages/Util/IronPython/ipy.exe masterServer.py 2
+mono /home/ubuntu/IronLanguages/Util/IronPython/ipy.exe /home/ubuntu/Peer-To-Peer-Market-Place/Backend/vsync/masterServer.py 2
 mono /home/ubuntu/IronLanguages/Util/IronPython/ipy.exe masterServer.py 3
 mono /home/ubuntu/IronLanguages/Util/IronPython/ipy.exe masterServer.py 4
 mono /home/ubuntu/IronLanguages/Util/IronPython/ipy.exe masterServer.py 5
