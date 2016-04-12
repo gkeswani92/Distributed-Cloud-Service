@@ -18,6 +18,14 @@ apt-get install python-pip
 pip install flask
 ```
 
+###Python2.6
+We use Python2.6 because its modules are compatible with Iron Python. To install:
+```
+sudo add-apt-repository ppa:fkrull/deadsnakes
+sudo apt-get update
+sudo apt-get install python2.6 python2.6-dev
+```
+
 ###HAProxy
 ```
 sudo apt-get install haproxy
