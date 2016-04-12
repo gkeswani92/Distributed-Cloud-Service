@@ -28,7 +28,7 @@ def startFlaskServer(id):
     '''
     #Connect RPC tunnel to send requests to the correct address and port
     rpc_flag = initializeRPC(id)
-
+    
     if rpc_flag:
         #Flask server starts running at '0.0.0.0:(5000+id)'
         flask_host = '0.0.0.0'
@@ -40,7 +40,8 @@ def startFlaskServer(id):
 
 @app.route("/")
 def hello():
-    return proxy.welcome_page();
+    return str(flask_port)
+    #return proxy.welcome_page();
 
 if __name__ == "__main__":
     startFlaskServer(sys.argv[1])

@@ -9,13 +9,13 @@ def startSystem(numGroup,numServPerGroup):
         dir(p)
 
         #Starting master server using an iron python process
-        p.StartInfo.FileName = 'ipy'
-        p.StartInfo.Arguments = './masterServer.py ' + str(i)
+        p.StartInfo.FileName = 'mono'
+        p.StartInfo.Arguments = '/home/ubuntu/IronLanguages/Util/IronPython/ipy.exe masterServer.py ' + str(i)
         p.Start()
 
         #Starting the flask server using a python process
         p.StartInfo.FileName = 'python'
-        p.StartInfo.Arguments = './client.py ' + str(i)
+        p.StartInfo.Arguments = 'client.py ' + str(i)
         p.Start()
 
 if __name__ == '__main__':
