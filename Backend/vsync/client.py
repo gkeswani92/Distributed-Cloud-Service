@@ -28,7 +28,7 @@ def startFlaskServer(id):
     '''
     #Connect RPC tunnel to send requests to the correct address and port
     rpc_flag = initializeRPC(id)
-    
+
     if rpc_flag:
         #Flask server starts running at '0.0.0.0:(5000+id)'
         flask_host = '0.0.0.0'
@@ -40,8 +40,22 @@ def startFlaskServer(id):
 
 @app.route("/")
 def hello():
-    proxy.putDHT("TestKey","TestValue")
-    return str(flask_port) + "Result from DHTGet: %s" % proxy.getDHT("TestKey")
+    return "Hello ... I got called"
+    #proxy.putDHT("TestKey","TestValue")
+    #return str(flask_port) + "Result from DHTGet: %s" % proxy.getDHT("TestKey")
+    #return proxy.welcome_page();
+
+@app.route("/testput")
+def testput():
+    #print "Hello ... I got called"
+    proxy.putDHT("Guarav","Tanvi")
+    #return str(flask_port) + "Result from DHTGet: %s" % proxy.getDHT("TestKey")
+    return "DHTPut called"
+@app.route("/testget")
+def testget():
+    #print "Hello ... I got called"
+    #proxy.putDHT("TestKey","TestValue")
+    return "Result from DHTGet: %s" % proxy.getDHT("Guarav")
     #return proxy.welcome_page();
 
 
