@@ -31,7 +31,7 @@ sudo apt-get install python2.6 python2.6-dev
 sudo apt-get install haproxy
 ```
 
-###Change HAProxy configuration file 
+###Change HAProxy configuration file to the file under /resources
 ```
 cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg_orig
 cat /dev/null > /etc/haproxy/haproxy.cfg
@@ -55,3 +55,53 @@ Add alias ipy="mono IronLanguages/bin/Release/ipy.exe” to .bashrc
 . ~/.bashrc
 ```
 
+###Run 2 Flask Servers
+```
+python /home/ubuntu/Peer-To-Peer-Market-Place/Backend/vsync/client.py 1
+python /home/ubuntu/Peer-To-Peer-Market-Place/Backend/vsync/client.py 2
+```
+
+###Run atleast 4 Master Servers
+```
+mono /home/ubuntu/IronLanguages/Util/IronPython/ipy.exe /home/ubuntu/Peer-To-Peer-Market-Place/Backend/vsync/masterServer.py 1
+sleep 20
+mono /home/ubuntu/IronLanguages/Util/IronPython/ipy.exe /home/ubuntu/Peer-To-Peer-Market-Place/Backend/vsync/masterServer.py 2
+mono /home/ubuntu/IronLanguages/Util/IronPython/ipy.exe /home/ubuntu/Peer-To-Peer-Market-Place/Backend/vsync/masterServer.py 3
+mono /home/ubuntu/IronLanguages/Util/IronPython/ipy.exe /home/ubuntu/Peer-To-Peer-Market-Place/Backend/vsync/masterServer.py 4
+```
+
+###Ping the server
+Ping the EC2 instance/localhost from your browser depending on where the application has been deployed. This will send the request to the load balancer that will route it to the respective flask server and get you the required response.
+```
+https://localhost:8080
+```
+
+###HTTP Load Testing
+Install go
+```
+mkdir $HOME/Go
+mkdir -p $HOME/Go/src/github.com/user
+
+export GOPATH=$HOME/Go
+export GOROOT=/usr/local/opt/go/libexec
+export PATH=$PATH:$GOPATH/bin
+export PATH=$PATH:$GOROOT/bin
+
+brew install go
+
+go get golang.org/x/tools/cmd/godoc
+go get golang.org/x/tools/cmd/vet
+```
+
+Install vegeta 
+```
+brew update && brew install vegeta
+go get -u github.com/tsenart/vegeta
+```
+
+Load test:
+```
+echo "GET http://ec2-54-165-216-78.compute-1.amazonaws.com/testget" | vegeta attack -duration=15s | tee results.bin | vegeta report
+cat results.bin | vegeta report -reporter=plot > plot.html
+open plot.html
+```
