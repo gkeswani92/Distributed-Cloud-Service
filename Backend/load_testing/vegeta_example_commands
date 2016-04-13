@@ -1,2 +1,11 @@
-echo "GET http://ec2-54-165-216-78.compute-1.amazonaws.com/testget" | vegeta attack -duration=5s | tee results.bin | vegeta report
+echo "GET http://ec2-54-165-216-78.compute-1.amazonaws.com/testget” | vegeta attack -duration=5s | tee results.bin | vegeta report
 echo "GET http://ec2-54-173-171-24.compute-1.amazonaws.com/testget" | vegeta attack -duration=15s | tee results_2_15_get.bin | vegeta report
+
+
+echo “GET 10.132.0.46:9000/testget?key=Guarav” | vegeta attack -duration=30s | tee results_4_30.bin | vegeta report
+echo "GET 10.132.0.46:9000/testget?key=Guarav” | vegeta attack -duration=30s | tee results.bin | vegeta report
+echo "GET 10.132.0.46:9000/testget?key=Guarav” | vegeta attack -duration=30s | tee results.bin | vegeta report
+
+
+
+
