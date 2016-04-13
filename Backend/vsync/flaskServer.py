@@ -55,14 +55,19 @@ def startFlaskServer(id):
 def hello():
     return "Hello! You are currently connected to flask port: {0}".format(str(flask_port))
 
-@app.route("/testput")
+@app.route("/testput",methods=['POST'])
 def testput():
-    proxy.putDHT("Gaurav","Tanvi")
-    return "DHTPut called"
+    if request.method == 'POST':
+        key = request.args.get('key')
+        value = request.args.get('value')
+        proxy.putDHT(key,value)
+        return json.dumps({'status':0,'message':'Flask port %s: Key %s and Value %s have been stored' % (flask_port,key,value)})
 
-@app.route("/testget")
+@app.route("/testget",methods=['GET'])
 def testget():
-    return "Result from DHTGet: {0} on flask port {1}".format(proxy.getDHT("Gaurav"),flask_port)
+    if request.method == 'GET':
+        key = request.args.get('key')
+        return "Result from DHTGet: {0} on flask port {1}".format(proxy.getDHT(key),flask_port)
 
 # authenticate users - stub created by Andy
 @app.route("/authenticate",methods=['GET','POST'])
