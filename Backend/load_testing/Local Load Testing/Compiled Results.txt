@@ -1,0 +1,31 @@
+echo "GET http://10.132.0.46:9000/testget?key=Guarav" | vegeta attack -duration=30s | tee results_4_30.bin | vegeta report
+Requests      [total, rate]            1500, 50.03
+Duration      [total, attack, wait]    29.996381764s, 29.97999986s, 16.381904ms
+Latencies     [mean, 50, 95, 99, max]  23.250963ms, 15.655499ms, 38.905056ms, 196.277026ms, 1.161615566s
+Bytes In      [total, mean]            69000, 46.00
+Bytes Out     [total, mean]            0, 0.00
+Success       [ratio]                  100.00%
+Status Codes  [code:count]             200:1500  
+Error Set:
+
+
+echo "GET http://10.132.0.46:9000/testget?key=Guarav" | vegeta attack -duration=30s | tee results_1_30.bin | vegeta report
+Requests      [total, rate]            1500, 50.03
+Duration      [total, attack, wait]    30.005183112s, 29.97999976s, 25.183352ms
+Latencies     [mean, 50, 95, 99, max]  37.675745ms, 31.561635ms, 94.653947ms, 140.952092ms, 176.379847ms
+Bytes In      [total, mean]            69000, 46.00
+Bytes Out     [total, mean]            0, 0.00
+Success       [ratio]                  100.00%
+Status Codes  [code:count]             200:1500  
+Error Set:
+
+
+echo "GET http://10.132.0.46:9000/testget?key=Guarav" | vegeta attack -duration=30s | tee results_10_30.bin | vegeta report
+Requests      [total, rate]            1500, 50.03
+Duration      [total, attack, wait]    30.000021462s, 29.979999897s, 20.021565ms
+Latencies     [mean, 50, 95, 99, max]  24.148545ms, 20.939545ms, 42.227335ms, 86.696375ms, 203.443218ms
+Bytes In      [total, mean]            69000, 46.00
+Bytes Out     [total, mean]            0, 0.00
+Success       [ratio]                  100.00%
+Status Codes  [code:count]             200:1500  
+Error Set:
