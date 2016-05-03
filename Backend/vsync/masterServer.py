@@ -30,6 +30,7 @@ class MasterServer(Thread):
         self.server.register_function(self.putService)
         self.server.register_function(self.checkPassword)
         self.server.register_function(self.getServiceProvider)
+        self.server.register_function(self.getProvidersForServiceTypes)
 
         #Initializing/joining a vsync group and its DHT
         self.group = Vsync.Group(self.group_name)
@@ -47,12 +48,18 @@ class MasterServer(Thread):
         #Defining the types of services that are provided
         self.services = ["Plumbing", "Gardening", "Taxi", "Baby Sitting"]
 
+    def getProvidersForServiceTypes(self, service_type):
+        '''
+            Returns the service id of all providers registered under the service type
+        '''
+        return self.group.DHTGet[(str,str)](service_type)
+        
     def getServiceProvider(self, service_type, location):
         '''
             Returns a provider to a user if available and turns the providers
             available to False
         '''
-        providers = getProvidersForServiceTypes(service_type)
+        providers = self.getProvidersForServiceTypes(service_type)
         if providers is not None:
             providers = json.loads(providers)
 
@@ -69,13 +76,11 @@ class MasterServer(Thread):
                     if serviceObj["available"] == True and serviceObj["location"] == location:
                         return json.dumps(serviceObj)
 
-        return None
+        reply = {"status" : 1,
+                 "providers" : json.dumps(providers)
+                 "message" : "Could not find any {0} provider in {1}".format(service_type, location)}
 
-    def getProvidersForServiceTypes(self, service_type):
-        '''
-            Returns the service id of all providers registered under the service type
-        '''
-        return self.group.DHTGet[(str,str)](service_type)
+        return json.dumps(reply)
 
     def putService(self, key, value):
         '''
@@ -84,7 +89,7 @@ class MasterServer(Thread):
         #If the key is in the list of services, it means this is a call to add
         #a service ID under its service name
         if key in self.services:
-            serviceIDs = getProvidersForServiceTypes(key)
+            serviceIDs = self.getProvidersForServiceTypes(key)
             if serviceIDs is None:
                 serviceIDs = [value]
                 self.group.DHTPut(key, json.dumps(serviceIDs))
