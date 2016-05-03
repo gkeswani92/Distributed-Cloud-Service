@@ -1,12 +1,19 @@
+from flask import Flask,request
+from werkzeug.contrib.cache import SimpleCache
 import xmlrpclib
 import sys
 import json
-from flask import Flask,request
 
 #Proxy server used for RPC communication between the flask process and Master server
 proxy = 0
 flask_port = 0
+
+#Initializing the flask application and its local cache
 app = Flask(__name__)
+cache = SimpleCache()
+
+#Time a key value pair will be stored in the local cache
+timeout = 2 * 60
 
 # setup some global variables and stub data
 userDBSR = {'testUserSR': 'testPassword'}
@@ -52,22 +59,51 @@ def startFlaskServer(id):
         print("Did not start flask server")
 
 @app.route("/")
-def hello():
-    return "Hello! You are currently connected to flask port: {0}".format(str(flask_port))
+def index():
+    return "Currently connected to flask port: {0}".format(str(flask_port))
 
 @app.route("/testput",methods=['POST'])
 def testput():
+    '''
+        Receives a key value pair via a POST request and stores the pair into the
+        DHT and the local cache
+    '''
+    global timeout
     if request.method == 'POST':
         key = request.args.get('key')
         value = request.args.get('value')
+
+        #Storing the key value pair in the DHT
         proxy.putDHT(key,value)
+
+        #Storing the key value pair in the cache for 5 mins
+        cache.set(key, value, timeout=timeout)
+
         return json.dumps({'status':0,'message':'Flask port %s: Key %s and Value %s have been stored' % (flask_port,key,value)})
 
 @app.route("/testget",methods=['GET'])
 def testget():
+    '''
+        Reads the key from the call and first checks it the corresponding value is in
+        the cache. If found, it returns the value. If not, it uses RPC to call its
+        master server with a DHT_GET call
+    '''
+    value = None
     if request.method == 'GET':
         key = request.args.get('key')
-        return "Result from DHTGet: {0} on flask port {1}".format(proxy.getDHT(key),flask_port)
+        cached_entry = cache.get(key)
+
+        #If the key value pair was not found in the cache, look into the DHT
+        if not cached_entry:
+            dht_entry = proxy.getDHT(key)
+
+            #If the key value pair was not found in the DHT as well, we have no record of this entry
+            if not dht_entry:
+                return "Result could not be found in the cache or the DHT on flask port {0}".format(flask_port)
+            else:
+                return "Result from DHTGet: {0} on flask port {1}".format(dht_entry, flask_port)
+        else:
+            return "Result from Cache: {0} on flask port {1}".format(cached_entry, flask_port)
 
 # authenticate users - stub created by Andy
 @app.route("/authenticate",methods=['GET','POST'])
@@ -126,7 +162,7 @@ def postService():
     cost = request.form.get('cost')
     description = request.form.get('description')
     serviceObj = {}
-    serviceObj["id"] = serviceID    
+    serviceObj["id"] = serviceID
     serviceObj["name"] = name
     serviceObj["type"] = type
     serviceObj["location"] = location
