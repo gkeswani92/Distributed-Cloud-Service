@@ -157,10 +157,10 @@ def postService():
 
         try:
             #Storing the service id under its service_type for first lookup
-            message1 = proxy.putDHT(service_type, serviceID)
+            message1 = proxy.putService(service_type, serviceID)
 
             #Storing the complete service details keyed by the service id
-            message2 = proxy.putDHT(serviceID, json.dumps(serviceObj))
+            message2 = proxy.putService(serviceID, json.dumps(serviceObj))
 
             reply = { "status"    : 0,
                       "message"   : "Success. {0} . {1}".format(message1, message2),
@@ -175,6 +175,30 @@ def postService():
         reply = { "status"    : 1,
                   "message"   : "Did not receive all parameters" }
 
+    return json.dumps(reply)
+
+# return two dummy services to the application to test connection - stub created by Andy
+@app.route("/getService",methods=['POST'])
+def getServiceProvider():
+    '''
+        Gets the service, if any, of the requested type and at the request location
+    '''
+    #Retrieving the details of the service posted
+    location = request.args.get('location')
+    service_type = request.args.get('serviceType')
+
+    #Getting the service providers for the requested service type
+    provider = proxy.getDHT(service_type, location)
+
+    if provider is not None:
+        reply = { "status" : 0,
+                  "data"   : provider,
+                  "error"  : ""}
+    else:
+        reply = { "status" : 1,
+                  "data"   : None,
+                  "error"  : "No service provider found" }
+                  
     return json.dumps(reply)
 
 # authenticate users - stub created by Andy

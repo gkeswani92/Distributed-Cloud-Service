@@ -27,9 +27,9 @@ class MasterServer(Thread):
         self.server.register_introspection_functions()
 
         #Registering functions to the RPC tunnel
-        self.server.register_function(self.putDHT)
+        self.server.register_function(self.putService)
         self.server.register_function(self.checkPassword)
-        self.server.register_function(self.getDHT)
+        self.server.register_function(self.getServiceProvider)
 
         #Initializing/joining a vsync group and its DHT
         self.group = Vsync.Group(self.group_name)
@@ -47,16 +47,32 @@ class MasterServer(Thread):
         #Defining the types of services that are provided
         self.services = ["Plumbing", "Gardening", "Taxi", "Baby Sitting"]
 
-    def checkPassword(self,username,password):
-        print "RPC call to check username,password"
-        print "username: %s" % username
-        print "password: %s" % password
-        return self.authUser(username,password)
+    def getServiceProvider(self, service_type, location):
+        '''
+            Returns a provider to a user if available and turns the providers
+            available to False
+        '''
+        providers = self.group.DHTGet[(str,str)](service_type)
+        if providers is not None:
+            providers = json.loads(providers)
 
-    def getDHT(self, key):
-        return self.group.DHTGet[(str,str)](key)
+            #Iterate through the providers to find a provider
+            for service_id in providers:
+                serviceObj = self.group.DHTGet[(str,str)](service_id)
 
-    def putDHT(self, key, value):
+                #This check should be redundant unless there has been an issue with the DHT
+                if serviceObj is not None:
+                    serviceObj = json.loads(serviceObj)
+
+                    #If the provider is available and is in the requested location
+                    #return to the user
+                    if serviceObj["available"] == True and serviceObj["location"] == location:
+                        return json.dumps(serviceObj)
+
+        return None
+
+
+    def putService(self, key, value):
         '''
             Puts the key and value in to the DHT depending on the parameters
         '''
@@ -80,7 +96,14 @@ class MasterServer(Thread):
         #service object
         else:
             self.group.DHTPut(key, value)
-            return "Information about Service ID has been stored in the DHT".format(key, value)
+            return "Information about Service ID {0} has been stored in the DHT {1}".format(key, value)
+
+    def checkPassword(self,username,password):
+        print "RPC call to check username,password"
+        print "username: %s" % username
+        print "password: %s" % password
+        return self.authUser(username,password)
+
 
     def authUser(self,username,password):
         #This should involve a call to the VSync DHT
