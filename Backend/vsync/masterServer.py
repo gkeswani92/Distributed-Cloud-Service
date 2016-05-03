@@ -65,13 +65,13 @@ class MasterServer(Thread):
             serviceIDs = self.getDHT(key)
             if serviceIDs is None:
                 serviceIDs = [value]
-                self.group.putDHT(key, json.dumps(serviceIDs))
+                self.group.DHTPut(key, json.dumps(serviceIDs))
             else:
                 serviceIDs = json.loads(serviceIDs)
                 serviceIDs.append(value)
 
             #Add the current service id under the list of services for its category
-            self.group.putDHT(key, json.dumps(serviceIDs))
+            self.group.DHTPut(key, json.dumps(serviceIDs))
 
             return "Service ID {0} added to list of {1}".format(value, key)
 

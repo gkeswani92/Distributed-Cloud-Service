@@ -160,7 +160,7 @@ def postService():
             message1 = proxy.putDHT(service_type, serviceID)
 
             #Storing the complete service details keyed by the service id
-            message2 = proxy.putDHT(serviceID, serviceObj)
+            message2 = proxy.putDHT(serviceID, json.dumps(serviceObj))
 
             reply = { "status"    : 0,
                       "message"   : "Success. {0} . {1}".format(message1, message2),
