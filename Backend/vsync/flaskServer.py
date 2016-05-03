@@ -79,7 +79,7 @@ def testput():
         #Storing the key value pair in the cache for 5 mins
         cache.set(key, value, timeout=timeout)
 
-        return json.dumps({'status':0,'message':'Flask port %s: Key %s and Value %s have been stored' % (flask_port,key,value)})
+        return json.dumps({'status':0,'message':'Flask port %s: Key %s and Value %s have been stored in the DHT and cache' %(flask_port,key,value)})
 
 @app.route("/testget",methods=['GET'])
 def testget():
@@ -89,21 +89,29 @@ def testget():
         master server with a DHT_GET call
     '''
     value = None
+    display_message = None
+
+    #IF a key was passed in through the URL, we try to look it up in the cache or DHT
     if request.method == 'GET':
         key = request.args.get('key')
-        cached_entry = cache.get(key)
+        if key:
+            cached_entry = cache.get(key)
 
-        #If the key value pair was not found in the cache, look into the DHT
-        if not cached_entry:
-            dht_entry = proxy.getDHT(key)
+            #If the key value pair was not found in the cache, look into the DHT
+            if not cached_entry:
+                dht_entry = proxy.getDHT(key)
 
-            #If the key value pair was not found in the DHT as well, we have no record of this entry
-            if not dht_entry:
-                return "Result could not be found in the cache or the DHT on flask port {0}".format(flask_port)
+                #If the key value pair was not found in the DHT as well, we have no record of this entry
+                if not dht_entry:
+                    display_message = "Result could not be found in the cache or the DHT on flask port {0}".format(flask_port)
+                else:
+                    display_message = "Result from DHTGet: {0} on flask port {1}".format(dht_entry, flask_port)
             else:
-                return "Result from DHTGet: {0} on flask port {1}".format(dht_entry, flask_port)
+                display_message = "Result from Cache: {0} on flask port {1}".format(cached_entry, flask_port)
         else:
-            return "Result from Cache: {0} on flask port {1}".format(cached_entry, flask_port)
+            display_message = "No key was passed to the testGet method"
+
+    return display_message
 
 # authenticate users - stub created by Andy
 @app.route("/authenticate",methods=['GET','POST'])
