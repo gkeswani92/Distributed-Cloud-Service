@@ -73,13 +73,17 @@ def testput():
         key = request.args.get('key')
         value = request.args.get('value')
 
-        #Storing the key value pair in the DHT
-        proxy.putDHT(key,value)
+        if key is not None and value is not None:
+            #Storing the key value pair in the DHT
+            proxy.putDHT(key,value)
 
-        #Storing the key value pair in the cache for 5 mins
-        cache.set(key, value, timeout=timeout)
+            #Storing the key value pair in the cache for 5 mins
+            cache.set(key, value, timeout=timeout)
 
-        return json.dumps({'status':0,'message':'Flask port %s: Key %s and Value %s have been stored in the DHT and cache' %(flask_port,key,value)})
+            return json.dumps({'status':0,'message':'Flask port %s: Key %s and Value %s have been stored in the DHT and cache' %(flask_port,key,value)})
+        else:
+            return "Key: {0} Value: {1} Invalid paramaters"
+
 
 @app.route("/testget",methods=['GET'])
 def testget():
