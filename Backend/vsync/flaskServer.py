@@ -137,14 +137,14 @@ def postService():
         Accept post service request and stores it in cache and in the DHT
     '''
     #Retrieving the details of the service posted
-    name = request.form.get('name')
-    service_type = request.form.get('type')
-    location = request.form.get('location')
-    cost = request.form.get('cost')
-    description = request.form.get('description')
+    name = request.args.get('name')
+    service_type = request.args.get('type')
+    location = request.args.get('location')
+    cost = request.args.get('cost')
+    description = request.args.get('description')
 
     #Every posted service will have a unique UUID as its service id
-    serviceID = uuid.uuid1()
+    serviceID = str(uuid.uuid1())
 
     if name and service_type and location and cost and description:
         serviceObj = {  "id"            : serviceID,
@@ -153,7 +153,7 @@ def postService():
                         "location"      : location,
                         "cost"          : cost,
                         "description"   : description,
-                        "availability"  : true }
+                        "availability"  : True }
 
         try:
             #Storing the service id under its service_type for first lookup
@@ -171,7 +171,11 @@ def postService():
                       "message"   : "Failure",
                       "error"     : str(e) }
 
-        return json.dumps(reply)
+    else:
+        reply = { "status"    : 1,
+                  "message"   : "Did not receive all parameters" }
+
+    return json.dumps(reply)
 
 # authenticate users - stub created by Andy
 @app.route("/authenticate",methods=['GET','POST'])
