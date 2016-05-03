@@ -28,7 +28,6 @@ class MasterServer(Thread):
         #Registering functions to the RPC tunnel
         self.server.register_function(self.putDHT)
         self.server.register_function(self.checkPassword)
-        self.server.register_function(self.welcome_page)
         self.server.register_function(self.getDHT)
 
         #Initializing/joining a vsync group and its DHT
@@ -44,8 +43,8 @@ class MasterServer(Thread):
         self.group.RegisterHandler(1, Action[str, str](self.authUser))
         self.group.Join()
 
-    def welcome_page(self):
-        return "Welcome to Handy"
+        #Defining the types of services that are provided
+        self.services = ["Plumbing", "Gardening", "Taxi", "Baby Sitting"]
 
     def checkPassword(self,username,password):
         print "RPC call to check username,password"
@@ -53,18 +52,34 @@ class MasterServer(Thread):
         print "password: %s" % password
         return self.authUser(username,password)
 
-    def getDHT(self,key):
-        # searchByKey = lambda keyValuePair: keyValuePair.Key == key
-        # predicate = Predicate[KeyValuePair[object,object]](searchByKey)
-        # return self.dht.Find(predicate).Value
+    def getDHT(self, key):
         return self.group.DHTGet[(str,str)](key)
 
-    def putDHT(self,key,value):
-        # content = KeyValuePair[object,object](key,value)
-        # self.dht.Add(content)
-        print "putDHT called key %s value %s" % (key,value)
-        self.group.DHTPut(key,value)
-        return True
+    def putDHT(self, key, value):
+        '''
+            Puts the key and value in to the DHT depending on the parameters
+        '''
+        #If the key is in the list of services, it means this is a call to add
+        #a service ID under its service name
+        if key in self.services:
+            serviceIDs = self.getDHT(key)
+            if serviceIDs is None:
+                serviceIDs = [value]
+                self.group.putDHT(key, json.dumps(serviceIDs))
+            else:
+                serviceIDs = json.loads(serviceIDs)
+                serviceIDs.append(value)
+
+            #Add the current service id under the list of services for its category
+            self.group.putDHT(key, json.dumps(serviceIDs))
+
+            return "Service ID {0} added to list of {1}".format(value, key)
+
+        #The key-value pair passed in is the service id and the corresponding
+        #service object
+        else:
+            self.group.DHTPut(key, value)
+            return "Information about Service ID has been stored in the DHT".format(key, value)
 
     def authUser(self,username,password):
         #This should involve a call to the VSync DHT

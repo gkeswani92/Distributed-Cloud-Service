@@ -1,6 +1,7 @@
 import xmlrpclib
 import sys
 import json
+import uuid
 
 from flask import Flask,request
 from werkzeug.contrib.cache import SimpleCache
@@ -130,6 +131,48 @@ def testget():
 
     return display_message
 
+@app.route("/postService", methods=['POST'])
+def postService():
+    '''
+        Accept post service request and stores it in cache and in the DHT
+    '''
+    #Retrieving the details of the service posted
+    name = request.form.get('name')
+    service_type = request.form.get('type')
+    location = request.form.get('location')
+    cost = request.form.get('cost')
+    description = request.form.get('description')
+
+    #Every posted service will have a unique UUID as its service id
+    serviceID = uuid.uuid1()
+
+    if name and service_type and location and cost and description:
+        serviceObj = {  "id"            : serviceID,
+                        "name"          : name,
+                        "type"          : service_type,
+                        "location"      : location,
+                        "cost"          : cost,
+                        "description"   : description,
+                        "availability"  : true }
+
+        try:
+            #Storing the service id under its service_type for first lookup
+            message1 = proxy.putDHT(service_type, serviceID)
+
+            #Storing the complete service details keyed by the service id
+            message2 = proxy.putDHT(serviceID, serviceObj)
+
+            reply = { "status"    : 0,
+                      "message"   : "Success. {0} . {1}".format(message1, message2),
+                      "serviceID" : serviceID }
+
+        except Exception as e:
+            reply = { "status"    : 1,
+                      "message"   : "Failure",
+                      "error"     : str(e) }
+
+        return json.dumps(reply)
+
 # authenticate users - stub created by Andy
 @app.route("/authenticate",methods=['GET','POST'])
 def authUsers():
@@ -175,32 +218,6 @@ def getServiceDetails():
     reply = {}
     reply["status"] = 0
     reply["data"] = serviceData[0]
-    return json.dumps(reply)
-
-# accept post service request and stores it in memory - stub created by Andy
-@app.route("/postService",methods=['POST'])
-def postService():
-    name = request.form.get('name')
-    type = request.form.get('type')
-    location = request.form.get('location')
-    radius = request.form.get('radius')
-    cost = request.form.get('cost')
-    description = request.form.get('description')
-    serviceObj = {}
-    serviceObj["id"] = serviceID
-    serviceObj["name"] = name
-    serviceObj["type"] = type
-    serviceObj["location"] = location
-    serviceObj["radius"] = radius
-    serviceObj["cost"] = cost
-    serviceObj["description"] = description
-    serviceObj["availability"] = "yes"
-    serviceData.append(serviceObj)
-    serviceID += 1
-    reply = {}
-    reply["status"] = 0
-    reply["message"] = "success"
-    reply["serviceID"] = serviceID
     return json.dumps(reply)
 
 # remove service from availability list when it is declared off on device - stub created by Andy
