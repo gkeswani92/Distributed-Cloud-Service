@@ -57,8 +57,8 @@ Add alias ipy="mono IronLanguages/bin/Release/ipy.exe” to .bashrc
 
 ###Run 2 Flask Servers
 ```
-python /home/ubuntu/Peer-To-Peer-Market-Place/Backend/vsync/client.py 1
-python /home/ubuntu/Peer-To-Peer-Market-Place/Backend/vsync/client.py 2
+python /home/ubuntu/Peer-To-Peer-Market-Place/Backend/vsync/flaskServer.py 1
+python /home/ubuntu/Peer-To-Peer-Market-Place/Backend/vsync/flaskServer.py 2
 ```
 
 ###Run atleast 4 Master Servers
