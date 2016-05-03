@@ -52,7 +52,7 @@ class MasterServer(Thread):
             Returns a provider to a user if available and turns the providers
             available to False
         '''
-        providers = self.group.DHTGet[(str,str)](service_type)
+        providers = getProvidersForServiceTypes(service_type)
         if providers is not None:
             providers = json.loads(providers)
 
@@ -71,6 +71,11 @@ class MasterServer(Thread):
 
         return None
 
+    def getProvidersForServiceTypes(self, service_type):
+        '''
+            Returns the service id of all providers registered under the service type
+        '''
+        return self.group.DHTGet[(str,str)](service_type)
 
     def putService(self, key, value):
         '''
@@ -79,7 +84,7 @@ class MasterServer(Thread):
         #If the key is in the list of services, it means this is a call to add
         #a service ID under its service name
         if key in self.services:
-            serviceIDs = self.getDHT(key)
+            serviceIDs = getProvidersForServiceTypes(key)
             if serviceIDs is None:
                 serviceIDs = [value]
                 self.group.DHTPut(key, json.dumps(serviceIDs))

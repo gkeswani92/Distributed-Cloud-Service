@@ -188,7 +188,7 @@ def getServiceProvider():
     service_type = request.args.get('serviceType')
 
     #Getting the service providers for the requested service type
-    provider = proxy.getDHT(service_type, location)
+    provider = proxy.getServiceProvider(service_type, location)
 
     if provider is not None:
         reply = { "status" : 0,
@@ -198,7 +198,7 @@ def getServiceProvider():
         reply = { "status" : 1,
                   "data"   : None,
                   "error"  : "No service provider found" }
-                  
+
     return json.dumps(reply)
 
 # authenticate users - stub created by Andy
