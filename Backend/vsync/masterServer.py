@@ -53,32 +53,43 @@ class MasterServer(Thread):
             Returns the service id of all providers registered under the service type
         '''
         return self.group.DHTGet[(str,str)](service_type)
-        
+
     def getServiceProvider(self, service_type, location):
         '''
             Returns a provider to a user if available and turns the providers
             available to False
         '''
-        providers = self.getProvidersForServiceTypes(service_type)
-        if providers is not None:
-            providers = json.loads(providers)
 
-            #Iterate through the providers to find a provider
-            for service_id in providers:
-                serviceObj = self.group.DHTGet[(str,str)](service_id)
+        try:
+            providers = self.getProvidersForServiceTypes(service_type)
+            if providers is not None:
+                providers = json.loads(providers)
 
-                #This check should be redundant unless there has been an issue with the DHT
-                if serviceObj is not None:
-                    serviceObj = json.loads(serviceObj)
+                #Iterate through the providers to find a provider
+                for service_id in providers:
+                    serviceObj = self.group.DHTGet[(str,str)](service_id)
 
-                    #If the provider is available and is in the requested location
-                    #return to the user
-                    if serviceObj["available"] == True and serviceObj["location"] == location:
-                        return json.dumps(serviceObj)
+                    #This check should be redundant unless there has been an issue with the DHT
+                    if serviceObj is not None:
+                        serviceObj = json.loads(serviceObj)
 
-        reply = {"status" : 1,
-                 "providers" : json.dumps(providers)
-                 "message" : "Could not find any {0} provider in {1}".format(service_type, location)}
+                        #If the provider is available and is in the requested location
+                        #return to the user
+                        if serviceObj["available"] == True and serviceObj["location"] == location:
+                            reply = { "status" : 0,
+                                      "data"   : json.dumps(serviceObj) }
+                            return json.dumps(reply)
+
+                reply = {"status" : 1,
+                         "providers" : json.dumps(providers),
+                         "message" : "Could not find any {0} provider in {1}".format(service_type, location)}
+            else:
+                reply = {"status" : 1,
+                         "message" : "Could not find any providers for the requested service type"}
+
+        except Exception as e:
+            reply = { "status" : 1,
+                      "error"  : str(e) }
 
         return json.dumps(reply)
 
