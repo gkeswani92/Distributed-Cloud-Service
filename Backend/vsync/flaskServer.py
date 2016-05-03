@@ -107,7 +107,6 @@ def testget():
         the cache. If found, it returns the value. If not, it uses RPC to call its
         master server with a DHT_GET call
     '''
-    value = None
     display_message = None
 
     #IF a key was passed in through the URL, we try to look it up in the cache or DHT
