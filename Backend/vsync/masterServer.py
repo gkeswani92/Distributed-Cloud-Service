@@ -65,45 +65,45 @@ class MasterServer(Thread):
         '''
         reply = None
 
-        #try:
-        #Get the providers that are registered under the mentioned service type
-        providers = self.getProvidersForServiceTypes(service_type)
+        try:
+            #Get the providers that are registered under the mentioned service type
+            providers = self.getProvidersForServiceTypes(service_type)
 
-        if providers is not None:
-            log = "Providers found: {0} ".format(providers)
-            providers = JavaScriptSerializer().DeserializeObject(providers)
+            if providers is not None:
+                log = "Providers found: {0} ".format(providers)
+                providers = JavaScriptSerializer().DeserializeObject(providers)
 
-            #Iterate through the providers to find a provider
-            for service_id in providers:
-                log += "Searching for service id {0} in the DHT. ".format(service_id)
+                #Iterate through the providers to find a provider
+                for service_id in providers:
+                    log += "Searching for service id {0} in the DHT. ".format(service_id)
 
-                serviceObj = self.group.DHTGet[(str,str)](service_id)
+                    serviceObj = self.group.DHTGet[(str,str)](service_id)
 
-                #This check should be redundant unless there has been an issue with the DHT
-                if serviceObj is not None:
-                    log += "Found object for service id {0} in the DHT. ".format(service_id)
-                    serviceObj = JavaScriptSerializer().DeserializeObject(serviceObj)
+                    #This check should be redundant unless there has been an issue with the DHT
+                    if serviceObj is not None:
+                        log += "Found object for service id {0} in the DHT. ".format(service_id)
+                        serviceObj = JavaScriptSerializer().DeserializeObject(serviceObj)
 
-                    #If the provider is available and is in the requested location
-                    #return to the user
-                    if serviceObj["availability"] == 0 and serviceObj["location"] == location:
-                        log += "Found matching service provider"
-                        reply = { "status" : 0,
-                                  "data"   : json.dumps(serviceObj) }
-                        return json.dumps(reply)
+                        #If the provider is available and is in the requested location
+                        #return to the user
+                        if serviceObj["availability"] == 0 and serviceObj["location"] == location:
+                            log += "Found matching service provider"
+                            reply = { "status" : 0,
+                                      "data"   : json.dumps(dict(serviceObj)) }
+                            return json.dumps(reply)
 
-            reply = {"status"    : 1,
-                     "providers" : json.dumps(providers),
-                     "message"   : "Could not find any {0} provider in {1}".format(service_type, location),
-                     "log"       : log}
-        else:
-            reply = {"status"  : 1,
-                     "message" : "Could not find any providers for the requested service type"}
+                reply = {"status"    : 1,
+                         "providers" : json.dumps(providers),
+                         "message"   : "Could not find any {0} provider in {1}".format(service_type, location),
+                         "log"       : log}
+            else:
+                reply = {"status"  : 1,
+                         "message" : "Could not find any providers for the requested service type"}
 
-        # except Exception as e:
-        #     reply = { "status" : 1,
-        #               "error"  : str(e),
-        #               "log"    : log }
+        except Exception as e:
+            reply = { "status" : 1,
+                      "error"  : str(e),
+                      "log"    : log }
 
         return json.dumps(reply, indent=4, separators=(',', ': '))
 
