@@ -191,13 +191,18 @@ def getServiceProvider():
     provider = proxy.getServiceProvider(service_type, location)
 
     if provider is not None:
-        reply = { "status" : 0,
-                  "data"   : provider,
-                  "error"  : ""}
+        if provider.get("status") == 0:
+            reply = { "status" : 0,
+                      "data"   : provider,
+                      "error"  : ""}
+        else:
+            reply = { "status" : 1,
+                      "data"   : provider,
+                      "error"  : "No service provider found" }
+
     else:
         reply = { "status" : 1,
-                  "data"   : None,
-                  "error"  : "No service provider found" }
+                "error"  : "No data retrieved from VSync" }
 
     return json.dumps(reply)
 
