@@ -161,7 +161,7 @@ def postService():
             message1 = proxy.putService(service_type, serviceID)
 
             #Storing the complete service details keyed by the service id
-            message2 = proxy.putService(serviceID, marshal.dumps(serviceObj))
+            message2 = proxy.putService(serviceID, pickle.dumps(serviceObj))
 
             reply = { "status"    : 0,
                       "message"   : "Success. {0} . {1}".format(message1, message2),
@@ -176,7 +176,7 @@ def postService():
         reply = { "status"    : 1,
                   "message"   : "Did not receive all parameters" }
 
-    return json.dumps(reply)
+    return json.dumps(reply, indent=4, separators=(',', ': '))
 
 # return two dummy services to the application to test connection - stub created by Andy
 @app.route("/getService",methods=['POST'])
@@ -206,7 +206,7 @@ def getServiceProvider():
         reply = { "status" : 1,
                 "error"  : "No data retrieved from VSync" }
 
-    return json.dumps(reply)
+    return json.dumps(reply, indent=4, separators=(',', ': '))
 
 # authenticate users - stub created by Andy
 @app.route("/authenticate",methods=['GET','POST'])
