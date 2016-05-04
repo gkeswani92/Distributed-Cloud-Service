@@ -5,6 +5,7 @@ from System.Collections.Generic import KeyValuePair
 #sys.path.append('/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.6') #Append Python Library Path
 sys.path.append('/usr/lib/python2.6')
 import json
+import marshal
 import os
 from threading import Thread, Lock, Condition
 from SimpleXMLRPCServer import SimpleXMLRPCServer,SimpleXMLRPCRequestHandler
@@ -59,15 +60,16 @@ class MasterServer(Thread):
             Returns a provider to a user if available and turns the providers
             available to False
         '''
-        log = ""
+        reply = None
+
         try:
             #Get the providers that are registered under the mentioned service type
             providers = self.getProvidersForServiceTypes(service_type)
 
             if providers is not None:
-                log += "Providers found: {0} ".format(providers)
-                providers = json.loads(providers)
-                log += "Coverted providers to list. "
+                log = "Providers found: {0} ".format(providers)
+                providers = marshal.loads(providers)
+                log += "Successfully coverted providers to list. "
 
                 #Iterate through the providers to find a provider
                 for service_id in providers:
@@ -78,7 +80,7 @@ class MasterServer(Thread):
                     #This check should be redundant unless there has been an issue with the DHT
                     if serviceObj is not None:
                         log += "Found object for service id {0} in the DHT. ".format(service_id)
-                        serviceObj = json.loads(serviceObj)
+                        serviceObj = marshal.loads(serviceObj)
 
                         #If the provider is available and is in the requested location
                         #return to the user
@@ -114,13 +116,13 @@ class MasterServer(Thread):
             serviceIDs = self.getProvidersForServiceTypes(key)
             if serviceIDs is None:
                 serviceIDs = [value]
-                self.group.DHTPut(key, json.dumps(serviceIDs))
+                self.group.DHTPut(key, marshal.dumps(serviceIDs))
             else:
-                serviceIDs = json.loads(serviceIDs)
+                serviceIDs = marshal.loads(serviceIDs)
                 serviceIDs.append(value)
 
             #Add the current service id under the list of services for its category
-            self.group.DHTPut(key, json.dumps(serviceIDs))
+            self.group.DHTPut(key, marshal.dumps(serviceIDs))
 
             return "Service ID {0} added to list of {1}".format(value, key)
 

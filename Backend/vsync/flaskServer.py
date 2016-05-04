@@ -191,6 +191,7 @@ def getServiceProvider():
     provider = proxy.getServiceProvider(service_type, location)
 
     if provider is not None:
+        provider = json.loads(provider)
         if provider.get("status") == 0:
             reply = { "status" : 0,
                       "data"   : provider,
