@@ -63,7 +63,7 @@ class MasterServer(Thread):
             Returns a provider to a user if available and turns the providers
             available to False
         '''
-        reply = None
+        reply = {}
 
         try:
             #Get the providers that are registered under the mentioned service type

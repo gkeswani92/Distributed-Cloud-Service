@@ -137,11 +137,11 @@ def postService():
         Accept post service request and stores it in cache and in the DHT
     '''
     #Retrieving the details of the service posted
-    name = request.args.get('name')
-    service_type = request.args.get('type')
-    location = request.args.get('location')
-    cost = request.args.get('cost')
-    description = request.args.get('description')
+    name = request.form.get('name')
+    service_type = request.form.get('type')
+    location = request.form.get('location')
+    cost = request.form.get('cost')
+    description = request.form.get('description')
 
     #Every posted service will have a unique UUID as its service id
     serviceID = str(uuid.uuid1())
@@ -184,8 +184,8 @@ def getServiceProvider():
         Gets the service, if any, of the requested type and at the request location
     '''
     #Retrieving the details of the service posted
-    location = request.args.get('location')
-    service_type = request.args.get('serviceType')
+    location = request.form.get('location')
+    service_type = request.form.get('serviceType')
 
     #Getting the service providers for the requested service type
     provider = proxy.getServiceProvider(service_type, location)
