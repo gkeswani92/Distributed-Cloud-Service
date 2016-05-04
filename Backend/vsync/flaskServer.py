@@ -175,7 +175,7 @@ def postService():
         reply = { "status"    : 1,
                   "message"   : "Did not receive all parameters" }
 
-    return reply
+    return json.dumps(reply, indent=4, separators=(',', ': '))
 
 # return two dummy services to the application to test connection - stub created by Andy
 @app.route("/getService",methods=['POST'])
@@ -205,7 +205,7 @@ def getServiceProvider():
         reply = { "status" : 1,
                 "error"  : "No data retrieved from VSync" }
 
-    return reply
+    return json.dumps(reply, indent=4, separators=(',', ': '))
 
 # authenticate users - stub created by Andy
 @app.route("/authenticate",methods=['GET','POST'])
