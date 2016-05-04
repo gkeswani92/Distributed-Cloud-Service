@@ -114,9 +114,11 @@ class MasterServer(Thread):
         #a service ID under its service name
         if key in self.services:
             serviceIDs = self.getProvidersForServiceTypes(key)
+
+            #If this is the first time a service is being registered under this type
+            #create a new list, else append to the list and put in the DHT
             if serviceIDs is None:
                 serviceIDs = [value]
-                self.group.DHTPut(key, marshal.dumps(serviceIDs))
             else:
                 serviceIDs = marshal.loads(serviceIDs)
                 serviceIDs.append(value)

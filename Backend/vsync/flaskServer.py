@@ -1,6 +1,7 @@
 import xmlrpclib
 import sys
 import json
+import marshal
 import uuid
 
 from flask import Flask,request
@@ -160,7 +161,7 @@ def postService():
             message1 = proxy.putService(service_type, serviceID)
 
             #Storing the complete service details keyed by the service id
-            message2 = proxy.putService(serviceID, json.dumps(serviceObj))
+            message2 = proxy.putService(serviceID, marshal.dumps(serviceObj))
 
             reply = { "status"    : 0,
                       "message"   : "Success. {0} . {1}".format(message1, message2),
