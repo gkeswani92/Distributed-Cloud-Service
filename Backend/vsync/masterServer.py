@@ -93,8 +93,7 @@ class MasterServer(Thread):
                             return json.dumps(reply)
 
                 reply = {"status"    : 1,
-                         "providers" : json.dumps(providers),
-                         "message"   : "Could not find any {0} provider in {1}".format(service_type, location),
+                         "message"   : "Could not find any available {0} provider in {1}".format(service_type, location),
                          "log"       : log}
             else:
                 reply = {"status"  : 1,
