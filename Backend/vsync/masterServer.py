@@ -5,8 +5,8 @@ from System.Collections.Generic import KeyValuePair
 clr.AddReference('System.Web.Extensions')
 from System.Web.Script.Serialization import JavaScriptSerializer
 
-#sys.path.append('/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.6') #Append Python Library Path
-sys.path.append('/usr/lib/python2.6')
+sys.path.append('/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.6') #Append Python Library Path
+#sys.path.append('/usr/lib/python2.6')
 import json
 import json
 import os
@@ -64,45 +64,46 @@ class MasterServer(Thread):
             available to False
         '''
         reply = {}
+        available_providers = []
 
         try:
             #Get the providers that are registered under the mentioned service type
             providers = self.getProvidersForServiceTypes(service_type)
 
             if providers is not None:
-                log = "Providers found: {0} ".format(providers)
+                print("Providers found: {0} ".format(providers))
                 providers = JavaScriptSerializer().DeserializeObject(providers)
 
                 #Iterate through the providers to find a provider
                 for service_id in providers:
-                    log += "Searching for service id {0} in the DHT. ".format(service_id)
+                    print("Searching for service id {0} in the DHT. ".format(service_id))
 
                     serviceObj = self.group.DHTGet[(str,str)](service_id)
 
                     #This check should be redundant unless there has been an issue with the DHT
                     if serviceObj is not None:
-                        log += "Found object for service id {0} in the DHT. ".format(service_id)
+                        print("Found object for service id {0} in the DHT. ".format(service_id))
                         serviceObj = JavaScriptSerializer().DeserializeObject(serviceObj)
 
                         #If the provider is available and is in the requested location
                         #return to the user
                         if serviceObj["availability"] == 0 and serviceObj["location"] == location:
-                            log += "Found matching service provider"
-                            reply = { "status" : 0,
-                                      "data"   : json.dumps(dict(serviceObj)) }
-                            return json.dumps(reply)
+                            available_providers.append(dict(serviceObj))
+                            print("Found matching service provider with name {0}".format(dict(serviceObj).get("name")))
+                            print(json.dumps(available_providers))
 
-                reply = {"status"    : 1,
-                         "message"   : "Could not find any available {0} provider in {1}".format(service_type, location),
-                         "log"       : log}
+            #Return dump of providers if they were found, else return with status 0
+            if len(available_providers) > 0:
+                reply = { "status" : 0,
+                          "data"   : json.dumps(available_providers) }
             else:
-                reply = {"status"  : 1,
-                         "message" : "Could not find any providers for the requested service type"}
+                print("Could not find any providers for the service type {0} and location {1}".format(service_type, location))
+                reply = { "status"  : 1,
+                          "message" : "Could not find any providers for the requested service type"}
 
         except Exception as e:
             reply = { "status" : 1,
-                      "error"  : str(e),
-                      "log"    : log }
+                      "error"  : str(e) }
 
         return json.dumps(reply, indent=4, separators=(',', ': '))
 
@@ -118,11 +119,13 @@ class MasterServer(Thread):
             #If this is the first time a service is being registered under this type
             #create a new list, else append to the list and put in the DHT
             if serviceIDs is None:
+                print("First entry for {0} is service id: {1}".format(key, value))
                 serviceIDs = [value]
             else:
                 serviceIDs = JavaScriptSerializer().DeserializeObject(serviceIDs)
                 serviceIDs = list(serviceIDs)
                 serviceIDs.append(value)
+                print("Appending entry {0} in service type: {1}".format(value, key))
 
             #Add the current service id under the list of services for its category
             self.group.DHTPut(key, json.dumps(serviceIDs))
@@ -133,6 +136,7 @@ class MasterServer(Thread):
         #service object
         else:
             self.group.DHTPut(key, value)
+            print("Information about Service ID {0} has been stored in the DHT {1}".format(key, value))
             return "Information about Service ID {0} has been stored in the DHT {1}".format(key, value)
 
     def checkPassword(self,username,password):

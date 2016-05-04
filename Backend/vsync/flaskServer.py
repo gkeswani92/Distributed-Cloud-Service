@@ -177,15 +177,14 @@ def postService():
 
     return json.dumps(reply, indent=4, separators=(',', ': '))
 
-# return two dummy services to the application to test connection - stub created by Andy
-@app.route("/getService",methods=['POST'])
+@app.route("/getService",methods=['GET'])
 def getServiceProvider():
     '''
         Gets the service, if any, of the requested type and at the request location
     '''
     #Retrieving the details of the service posted
-    location = request.form.get('location')
-    service_type = request.form.get('serviceType')
+    location = request.args.get('location')
+    service_type = request.args.get('serviceType')
 
     #Getting the service providers for the requested service type
     provider = proxy.getServiceProvider(service_type, location)
@@ -234,25 +233,6 @@ def authUsers():
             return json.dumps({'status': 0, 'message':'Login Success'})
         else:
             return json.dumps({'status': 1, 'message':'Login Invalid'})
-
-# return two dummy services to the application to test connection - stub created by Andy
-@app.route("/getService",methods=['GET'])
-def getService():
-    reply = {}
-    reply["status"] = 0
-    reply["data"] = serviceData
-    return json.dumps(reply)
-
-# return the details of a particular service - stub created by Andy
-@app.route("/getServiceDetails",methods=['GET'])
-def getServiceDetails():
-    id = request.args.get('serviceID')
-    # insert logic here to find the service object given ID
-    # for now, I will always return the first service as stub
-    reply = {}
-    reply["status"] = 0
-    reply["data"] = serviceData[0]
-    return json.dumps(reply)
 
 # remove service from availability list when it is declared off on device - stub created by Andy
 @app.route("/deleteService",methods=['POST'])
