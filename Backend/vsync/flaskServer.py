@@ -1,7 +1,7 @@
 import xmlrpclib
 import sys
 import json
-import marshal
+import pickle
 import uuid
 
 from flask import Flask,request
