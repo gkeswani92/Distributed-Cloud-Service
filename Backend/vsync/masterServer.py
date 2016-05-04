@@ -122,6 +122,7 @@ class MasterServer(Thread):
                 serviceIDs = [value]
             else:
                 serviceIDs = JavaScriptSerializer().DeserializeObject(serviceIDs)
+                serviceIDs = list(serviceIDs)
                 serviceIDs.append(value)
 
             #Add the current service id under the list of services for its category
