@@ -105,3 +105,9 @@ echo "GET http://ec2-54-165-216-78.compute-1.amazonaws.com/testget" | vegeta att
 cat results.bin | vegeta report -reporter=plot > plot.html
 open plot.html
 ```
+
+###To Run
+```
+cd Backend/vsync/
+bash start.sh arg1 arg2 #where arg1 and arg2 are number of Flask servers and VSync servers, respectively
+```
