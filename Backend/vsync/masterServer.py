@@ -2,10 +2,13 @@ import clr, sys
 from System import Action,Predicate
 from System.Collections.Generic import KeyValuePair
 
+clr.AddReference('System.Web.Extensions')
+from System.Web.Script.Serialization import JavaScriptSerializer
+
 #sys.path.append('/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.6') #Append Python Library Path
 sys.path.append('/usr/lib/python2.6')
 import json
-import pickle
+import json
 import os
 from threading import Thread, Lock, Condition
 from SimpleXMLRPCServer import SimpleXMLRPCServer,SimpleXMLRPCRequestHandler
@@ -68,7 +71,7 @@ class MasterServer(Thread):
 
         if providers is not None:
             log = "Providers found: {0} ".format(providers)
-            providers = pickle.loads(providers)
+            providers = JavaScriptSerializer().DeserializeObject(providers)
 
             #Iterate through the providers to find a provider
             for service_id in providers:
@@ -79,8 +82,7 @@ class MasterServer(Thread):
                 #This check should be redundant unless there has been an issue with the DHT
                 if serviceObj is not None:
                     log += "Found object for service id {0} in the DHT. ".format(service_id)
-                    log += "Found object for service id  in the DHT. ".format(service_id)
-                    serviceObj = pickle.loads(serviceObj)
+                    serviceObj = JavaScriptSerializer().DeserializeObject(serviceObj)
 
                     #If the provider is available and is in the requested location
                     #return to the user
@@ -120,11 +122,11 @@ class MasterServer(Thread):
             if serviceIDs is None:
                 serviceIDs = [value]
             else:
-                serviceIDs = pickle.loads(serviceIDs)
+                serviceIDs = JavaScriptSerializer().DeserializeObject(serviceIDs)
                 serviceIDs.append(value)
 
             #Add the current service id under the list of services for its category
-            self.group.DHTPut(key, pickle.dumps(serviceIDs))
+            self.group.DHTPut(key, json.dumps(serviceIDs))
 
             return "Service ID {0} added to list of {1}".format(value, key)
 

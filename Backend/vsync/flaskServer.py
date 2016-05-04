@@ -1,7 +1,6 @@
 import xmlrpclib
 import sys
 import json
-import pickle
 import uuid
 
 from flask import Flask,request
@@ -154,14 +153,14 @@ def postService():
                         "location"      : location,
                         "cost"          : cost,
                         "description"   : description,
-                        "availability"  : True }
+                        "availability"  : 0 }
 
         try:
             #Storing the service id under its service_type for first lookup
             message1 = proxy.putService(service_type, serviceID)
 
             #Storing the complete service details keyed by the service id
-            message2 = proxy.putService(serviceID, pickle.dumps(serviceObj))
+            message2 = proxy.putService(serviceID, json.dumps(serviceObj))
 
             reply = { "status"    : 0,
                       "message"   : "Success. {0} . {1}".format(message1, message2),
