@@ -86,7 +86,7 @@ class MasterServer(Thread):
 
                     #If the provider is available and is in the requested location
                     #return to the user
-                    if serviceObj["available"] == True and serviceObj["location"] == location:
+                    if serviceObj["availability"] == 0 and serviceObj["location"] == location:
                         log += "Found matching service provider"
                         reply = { "status" : 0,
                                   "data"   : json.dumps(serviceObj) }
@@ -98,8 +98,7 @@ class MasterServer(Thread):
                      "log"       : log}
         else:
             reply = {"status"  : 1,
-                     "message" : "Could not find any providers for the requested service type",
-                     "log"     : log}
+                     "message" : "Could not find any providers for the requested service type"}
 
         # except Exception as e:
         #     reply = { "status" : 1,
