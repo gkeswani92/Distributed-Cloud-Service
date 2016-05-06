@@ -94,14 +94,6 @@
                 android:layout_height="wrap_content"
                 android:text="Request Service" />
             
-          	<Button
-                android:id="@+id/btnSubmitReview"
-                android:layout_marginBottom="10dp"
-                android:visibility="invisible"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Submit a Review" />
-        
         </LinearLayout>
         
     </ScrollView>

@@ -327,5 +327,92 @@ def testget():
 
     return display_message
 
+######################GCM + Other Stub Functions######################
+from gcm import GCM
+gcm = GCM("AIzaSyAY0H3hUW5jHoUZQgqyNrQvScRqrNOmqhk")
+counter = 0 # this counter is only used to generate different messages everytime
+device_token = {}
+
+@app.route("/registerAndroidDeviceForGCMPush",methods=['POST'])
+def registerAndroidDeviceForGCMPush():
+    global device_token
+    user_email = request.form.get("username")
+    user_type = request.form.get("userType")
+    new_token = request.form.get("new_push_device_token")
+    
+    if user_email not in device_token:
+	    device_token[user_email] = new_token
+    elif user_email in device_token and device_token[user_email] != new_token:
+        device_token[user_email] = new_token
+
+    data = {}
+    data["status"] = "0"
+    print device_token
+    return json.dumps(data)
+
+@app.route("/sendTestPush",methods=['GET','POST'])
+def sendTestPush():
+    global device_token
+    global counter
+    if (counter % 5) == 0:
+        data = {'messageTitle': 'Test PUSH Message', 'data': 'This is a test PUSH message'}
+    elif (counter % 5) == 1:
+        data = {'messageTitle': 'Test PUSH Message', 'data': 'Hello World!'}
+    elif (counter % 5) == 2:
+        data = {'messageTitle': 'Test PUSH Message', 'data': 'How are you doing today?'}
+    elif (counter % 5) == 3:
+        data = {'messageTitle': 'Test PUSH Message', 'data': 'Welcome to Handy!'}
+    elif (counter % 5) == 4:
+        data = {'messageTitle': 'Test PUSH Message', 'data': 'Someone has requested your service!'}
+	
+    print device_token.values()
+
+    # JSON request
+    response = gcm.json_request(registration_ids=device_token.values(), data=data)
+
+    counter = counter+1
+    data = {}
+    data["status"] = "0"
+    return json.dumps(data)
+
+@app.route("/createUser",methods=['POST'])
+def createUser():
+    username = request.form.get("username")
+    password = request.form.get("password")
+    user_type = request.form.get("userType")
+    if user_type == 'sp':
+        userDBSP[username] = password
+    if user_type == 'sr':
+        userDBSR[username] = password
+    reply = {}
+    reply["status"] = 0
+    reply["message"] = "success"
+    return json.dumps(reply)
+
+@app.route("/updateService",methods=['POST'])
+def updateService():
+    id = request.form.get('serviceID')
+    name = request.form.get('name')
+    type = request.form.get('type')
+    location = request.form.get('location')
+    cost = request.form.get('cost')
+    description = request.form.get('description')
+    # insert logic here to delete the service object
+    reply = {}
+    reply["status"] = 0
+    reply["message"] = "Success"
+    return json.dumps(reply)
+
+@app.route("/changeServiceAvailability",methods=['POST'])
+def changeServiceAvailability():
+    id = request.form.get('serviceID')
+    # insert logic here to delete the service object
+    reply = {}
+    reply["status"] = 0
+    reply["message"] = "Success"
+    return json.dumps(reply)
+
+#########################################################
+
 if __name__ == "__main__":
     startFlaskServer(sys.argv[1])

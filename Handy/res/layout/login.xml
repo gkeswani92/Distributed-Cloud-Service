@@ -54,6 +54,21 @@
         android:paddingRight="10dp"
         android:hint="Password"/>
     
+        <!-- <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/edittext_default_bg"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:maxLines="1"
+        android:textColor="@color/black"
+        android:id="@+id/edittextIP"
+        android:inputType="text"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:hint="Server IP"/>  -->
+    
     <RadioGroup 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

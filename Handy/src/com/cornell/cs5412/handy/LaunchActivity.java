@@ -1,7 +1,9 @@
 package com.cornell.cs5412.handy;
 
+import com.cornell.cs5412.handy.gcm.GCMUtilities;
 import com.cornell.cs5412.handy.serviceprovider.SPProfile;
 import com.cornell.cs5412.handy.servicereceiver.SRHomeSearch;
+import com.cornell.cs5412.handy.servicereceiver.ServiceDetails;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -21,12 +23,40 @@ public class LaunchActivity extends Activity {
 		// setup preference storage
 		loadPreferences(LaunchActivity.this);
 		
+		//intent = new Intent().setClass(LaunchActivity.this, SRHomeSearch.class);
+		//intent.putExtra("serviceID", "1");
+		//Globals.sharedPrefs.saveInt("requestStatus1", 2);
+		
+		Thread t2 = new Thread(new Runnable() {
+
+			@Override
+			public void run() 
+			{	
+				GCMUtilities.registerWithGCM(getApplicationContext(), Globals.SENDER_ID);
+			}
+		});
+		
+		try
+		{
+			t2.start();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
 		if (Globals.sharedPrefs.getBoolean("loginSPComplete"))
+		{
 			intent = new Intent().setClass(LaunchActivity.this, SPProfile.class);
+		}
 		else if (Globals.sharedPrefs.getBoolean("loginSRComplete"))
+		{
 			intent = new Intent().setClass(LaunchActivity.this, SRHomeSearch.class);
+		}
 		else
+		{
 			intent = new Intent().setClass(LaunchActivity.this, LoginActivity.class);
+		}
 		
 		int timer = 3000;
 		new CountDownTimer(timer, 1000) {

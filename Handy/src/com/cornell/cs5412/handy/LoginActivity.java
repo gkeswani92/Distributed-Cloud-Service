@@ -6,6 +6,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
+import com.cornell.cs5412.handy.gcm.GCMUtilities;
 import com.cornell.cs5412.handy.serviceprovider.SPProfile;
 import com.cornell.cs5412.handy.servicereceiver.SRHomeSearch;
 
@@ -32,6 +33,7 @@ public class LoginActivity extends Activity
 	private RadioButton radioButtonSR;
 	private EditText edittextUsername;
 	private EditText edittextPassword;
+	//private EditText edittextIP;
 	private String username = "";
 	private String password = "";
 	private ProgressDialog progress;
@@ -53,6 +55,7 @@ public class LoginActivity extends Activity
 		radioButtonSR = (RadioButton) findViewById(R.id.radioButtonSR);
 		edittextUsername = (EditText) findViewById(R.id.edittextUsername);
 		edittextPassword = (EditText) findViewById(R.id.edittextPassword);
+		//edittextIP = (EditText) findViewById(R.id.edittextIP);
 
 		btnSignIn = (Button) findViewById(R.id.btnSignIn);
 		btnSignIn.setOnClickListener(new OnClickListener() {
@@ -64,6 +67,7 @@ public class LoginActivity extends Activity
 				
 				username = edittextUsername.getText().toString();
 				password = edittextPassword.getText().toString();
+				//Globals.ipAddress = edittextIP.getText().toString();
 				
 				if(username.equalsIgnoreCase("") || password.equalsIgnoreCase(""))
 				{
@@ -88,6 +92,20 @@ public class LoginActivity extends Activity
 					           		params.add(new BasicNameValuePair("userType", "sr"));
 								        
 								final JSONObject json = DataTransfer.postJSONResult(Globals.ipAddress + "/authenticate", params);
+								if (json.optInt("status") == 0) // login successful
+								{
+									Globals.sharedPrefs.saveString("username", username);
+									Globals.sharedPrefs.saveString("signedIn", "1");
+									if(selectedId == radioButtonSP.getId())
+									{
+										Globals.sharedPrefs.saveBoolean("loginSPComplete", true);
+									}
+									else if(selectedId == radioButtonSR.getId())
+									{
+										Globals.sharedPrefs.saveBoolean("loginSRComplete", true);
+									}
+									GCMUtilities.registerWithGCM(getApplicationContext(), Globals.SENDER_ID);
+								}
 										
 								runOnUiThread(new Runnable() {
 									public void run()
@@ -102,12 +120,10 @@ public class LoginActivity extends Activity
 												Intent intent = null;
 												if(selectedId == radioButtonSP.getId())
 												{
-													Globals.sharedPrefs.saveBoolean("loginSPComplete", true);
 													intent = new Intent().setClass(LoginActivity.this, SPProfile.class);
 												}
 												else if(selectedId == radioButtonSR.getId())
 												{
-													Globals.sharedPrefs.saveBoolean("loginSRComplete", true);
 													intent = new Intent().setClass(LoginActivity.this, SRHomeSearch.class);
 												}
 												intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -154,11 +170,82 @@ public class LoginActivity extends Activity
 			@Override
 			public void onClick(View v) 
 			{
-				// go to an activity to setup an account
+				final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(edittextPassword.getWindowToken(), 0);
 				
-				//Intent intent;
-				//intent = new Intent().setClass(LoginActivity.this, SRHomeSearch.class);
-				//startActivity(intent);
+				username = edittextUsername.getText().toString();
+				password = edittextPassword.getText().toString();
+				
+				if(username.equalsIgnoreCase("") || password.equalsIgnoreCase(""))
+				{
+					Globals.showAlert("Error", "Please fill in all necessary information and try again!", LoginActivity.this);
+				}
+				else
+				{
+					final int selectedId = radioGroupID.getCheckedRadioButtonId();
+					Globals.showProgress(progress, "Loading...");
+					new Thread(new Runnable() {
+						@Override
+						public void run() 
+						{
+							try 
+							{
+					           	ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+					           	params.add(new BasicNameValuePair("username", username));
+					           	params.add(new BasicNameValuePair("password", password));
+					           	if(selectedId == radioButtonSP.getId())
+					           		params.add(new BasicNameValuePair("userType", "sp"));
+					           	else if(selectedId == radioButtonSR.getId())
+					           		params.add(new BasicNameValuePair("userType", "sr"));
+								        
+								final JSONObject json = DataTransfer.postJSONResult(Globals.ipAddress + "/createUser", params);
+										
+								runOnUiThread(new Runnable() {
+									public void run()
+									{											
+										try
+										{
+											if (progress.isShowing())
+												progress.dismiss();
+											
+											if (json.optInt("status") == 0) // login successful
+											{
+												Globals.showAlert("Success", "Your account has been created, please sign in with your new credientials!", LoginActivity.this);// show error message
+											}
+											else
+											{
+												String error = json.optString("message");
+												Globals.showAlert("Error", error, LoginActivity.this);// show error message
+											}
+										}
+										catch(Exception e)
+										{
+											if (progress.isShowing())
+												progress.dismiss();
+											
+											e.printStackTrace();
+											Toast.makeText(LoginActivity.this, "An error has occurred!!", Toast.LENGTH_SHORT).show();
+										}
+									}
+								});
+							} 
+							catch (Exception e)
+							{
+								e.printStackTrace();
+								runOnUiThread(new Runnable() {
+									public void run()
+									{
+										if (progress.isShowing())
+											progress.dismiss();
+												
+										Globals.showAlert("Error", "There was an error with this transaction", LoginActivity.this);// show error message
+									}
+								});
+							}
+						}
+					}).start();
+				}
+			
 			}
 		});
 	}

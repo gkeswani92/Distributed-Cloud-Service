@@ -107,7 +107,7 @@
         		android:inputType="textPostalAddress"
         		android:hint="number, street name, city, state, zip"/>
        	  	
-       	 	<TextView
+       	 	<!-- <TextView
        	        android:layout_width="wrap_content"
        	        android:layout_height="wrap_content"
        	        android:text="Service Radius:"
@@ -128,7 +128,7 @@
         		android:paddingLeft="10dp"
         		android:paddingRight="10dp"
         		android:inputType="number"
-        		android:hint="radius in miles"/>
+        		android:hint="radius in miles"/> -->
        	  	
        	 	<TextView
        	        android:layout_width="wrap_content"
@@ -178,7 +178,7 @@
 			    android:layout_height="wrap_content"
 			    android:layout_width="match_parent"
 			    android:layout_marginBottom="10dp"
-			    android:text="Save"
+			    android:text="Post/Update"
 			    android:id="@+id/btnSubmit"/>
        	    
        	</LinearLayout>

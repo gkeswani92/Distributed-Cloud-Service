@@ -192,6 +192,7 @@ public class DataTransfer
 			{
 				InputStream instream = resEntity.getContent();
 				String result = convertStreamToString(instream);
+				//Log.e("CS5999", result);
 				instream.close();
 				JSONObject jsonObject = new JSONObject(result);
 				return jsonObject;

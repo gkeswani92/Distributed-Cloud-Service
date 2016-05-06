@@ -1,6 +1,8 @@
 package com.cornell.cs5412.handy.servicereceiver;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -12,20 +14,30 @@ import com.cornell.cs5412.handy.R;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
 public class SRHomeSearch extends Activity 
 {
 	private TableLayout searchResult;
+	private EditText editSearch;
+	private Spinner spinnerServiceType;
+	private Button btnSearch;
 	private ProgressDialog progress;
 
 	@Override
@@ -39,7 +51,39 @@ public class SRHomeSearch extends Activity
 		setContentView(R.layout.home_sr);
 		searchResult = (TableLayout) findViewById(R.id.messageTableLayout);
 		progress = new ProgressDialog(this);
-		createServiceList();
+		
+		editSearch = (EditText)findViewById(R.id.editSearch);
+		spinnerServiceType = (Spinner)findViewById(R.id.spinnerServiceType);
+		
+	    List<String> categories = new ArrayList<String>();
+	    categories.add("Please Select a Type of Service");
+	    categories.add("Gardening");
+	    categories.add("Plumbing");
+	    categories.add("Taxi");
+	    categories.add("Baby Sitting");
+	    
+	    ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, R.layout.spinner_cell, categories);
+	    spinnerServiceType.setAdapter(dataAdapter);
+		
+		btnSearch = (Button)findViewById(R.id.btnSearch);
+		btnSearch.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v)
+			{
+				final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(editSearch.getWindowToken(), 0);
+				
+				if(editSearch.getText().toString().equalsIgnoreCase("") || spinnerServiceType.getSelectedItemPosition() == 0)
+				{
+					Globals.showAlert("Missing Information", "Please fill out all the search criteria", SRHomeSearch.this);
+				}
+				else
+				{
+					editSearch.setText("");
+					createServiceList(spinnerServiceType.getSelectedItem().toString(), editSearch.getText().toString());
+				}
+			}
+		});
 	}
 	
 	public void onResume()
@@ -48,7 +92,7 @@ public class SRHomeSearch extends Activity
 		setupScreen();
 	}
 	
-	public void createServiceList()
+	public void createServiceList(final String serviceType, final String serviceLocation)
 	{
 		Globals.showProgress(progress, "Loading...");
 		Thread t2 = new Thread(new Runnable() {
@@ -57,9 +101,15 @@ public class SRHomeSearch extends Activity
 				try
 				{
 					ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-					params.add(new BasicNameValuePair("keyword", "nothing"));
+					params.add(new BasicNameValuePair("location", serviceLocation));
+					params.add(new BasicNameValuePair("serviceType", serviceType));
 					
 					final JSONObject json = DataTransfer.getJSONResult(Globals.ipAddress + "/getService", params);
+					
+					Log.e("CS5999", "Response: " + json.toString());
+					
+					//Globals.showAlert("Server Response", json.toString(), SRHomeSearch.this);
+					
 					final JSONArray jsonArray = json.optJSONArray("data");
 
 					runOnUiThread(new Runnable(){
