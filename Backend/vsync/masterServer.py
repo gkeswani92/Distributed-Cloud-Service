@@ -17,7 +17,7 @@ from SimpleXMLRPCServer import SimpleXMLRPCServer,SimpleXMLRPCRequestHandler
 sys.path.append(os.getcwd()+'/../../Resources')
 clr.AddReference('Vsync.dll')
 import Vsync
-
+someData = 100
 class MasterServer(Thread):
 
     def __init__(self,id):
@@ -47,11 +47,24 @@ class MasterServer(Thread):
         #Registering functions that can be called on the VSync group
         self.group.RegisterViewHandler(Vsync.ViewHandler(self.report))
         self.group.RegisterHandler(1, Action[str, str](self.authUser))
+
+
+        #Registering snapshot handlers
+        self.group.RegisterMakeChkpt(Vsync.ChkptMaker(self.save))
+        self.group.RegisterLoadChkpt(Action[int](self.load))
+        self.group.Persistent(os.getcwd()+"/Checkpoint/snapshot")
         self.group.Join()
 
         #Defining the types of services that are provided
         self.services = ["Plumbing", "Gardening", "Taxi", "Baby Sitting"]
+    def save(self,v):
+        print "save() called"
+        self.group.SendChkpt(someData)
+        self.group.EndOfChkpt()
 
+    def load(self,v):
+        print "load() got called"
+        print v
     def getProvidersForServiceTypes(self, service_type):
         '''
             Returns the service id of all providers registered under the service type
@@ -144,7 +157,6 @@ class MasterServer(Thread):
         print "username: %s" % username
         print "password: %s" % password
         return self.authUser(username,password)
-
 
     def authUser(self,username,password):
         #This should involve a call to the VSync DHT
