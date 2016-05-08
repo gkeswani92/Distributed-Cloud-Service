@@ -40,6 +40,9 @@ class MasterServer(Thread):
         self.server.register_function(self.changeServiceAvailability)
         self.server.register_function(self.updateServiceDetails)
         self.server.register_function(self.deleteService)
+        self.server.register_function(self.foreachtest)
+        self.server.register_function(self.getForRecorder)
+        self.server.register_function(self.putForRecoverer)
 
         #Initializing/joining a vsync group and its DHT
         self.group = Vsync.Group(self.group_name)
@@ -71,6 +74,11 @@ class MasterServer(Thread):
     # def load(self,v):
     #     print "load() got called"
     #     print v
+    def getForRecorder(self,key):
+        return self.group.DHTGet[(str,str)](key)
+
+    def putForRecoverer(self,key,value):
+        self.group.DHTPut(key, value)
 
     def getProvidersForServiceTypes(self, service_type):
         '''
@@ -207,6 +215,20 @@ class MasterServer(Thread):
             return json.dumps({'status': 0, 'message':'Added latest token for user'})
         else:
             return json.dumps({'status': 1, 'message':'Username does not exist'})
+
+    def foreachtest(self):
+
+        print "==================================================================================="
+        help(self.dht.ForEach)
+        print type(self.dht)
+        print self.group.DHTGet[(str,str)]("cba662c7-153a-11e6-a717-a45e60b9c6b3")
+        self.dht.ForEach(Action[KeyValuePair[object,object]](self.test))
+        print "==================================================================================="
+
+        return "true"
+
+    def test(self,key_and_value):
+        print "x gets called"
 
     def changeServiceAvailability(self, id):
         '''
