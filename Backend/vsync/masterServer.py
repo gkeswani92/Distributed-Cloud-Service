@@ -41,6 +41,7 @@ class MasterServer(Thread):
         self.server.register_function(self.updateServiceDetails)
         self.server.register_function(self.deleteService)
         self.server.register_function(self.getUserToken)
+        self.server.register_function(self.getServiceProviderTokenFromServiceID)
 
         #Initializing/joining a vsync group and its DHT
         self.group = Vsync.Group(self.group_name)
@@ -273,17 +274,40 @@ class MasterServer(Thread):
         '''
             Returns the token of the user if one has been registered
         '''
-        userObj = self.group.DHTGet[(str,str)](username)
-        if userObj is not None:
-            userObj = dict(JavaScriptSerializer().DeserializeObject(userObj))
-            token = userObj.get("token",None)
+        try:
+            userObj = self.group.DHTGet[(str,str)](username)
+            if userObj is not None:
+                userObj = dict(JavaScriptSerializer().DeserializeObject(userObj))
+                token = userObj.get("token",None)
 
-            if token is not None:
-                return json.dumps({'status': 0, 'token':token})
+                if token is not None:
+                    return json.dumps({'status': 0, 'token':token})
+                else:
+                    json.dumps({'status': 1, 'message':'Could not find user token'})
             else:
-                json.dumps({'status': 1, 'message':'Could not find user token'})
-        else:
-            return json.dumps({'status': 1, 'message':'Could not find user data'})
+                return json.dumps({'status': 1, 'message':'Could not find user data'})
+
+        except Exception as e:
+            return json.dumps({'status':1, 'message':str(e)})
+
+    def getServiceProviderTokenFromServiceID(self, serviceID):
+        '''
+            Returns the username of the service provider of the passed in service ID
+        '''
+        try:
+            serviceObj = self.group.DHTGet[(str,str)](serviceID)
+
+            #If there is a corresponding service object for this id
+            if serviceObj is not None:
+                serviceObj = dict(JavaScriptSerializer().DeserializeObject(serviceObj))
+                username = serviceObj.get("username", None)
+                print("Username of provider {0}".format(username))
+                return self.getUserToken(username)
+            else:
+                return json.dumps({'status': 1, 'message':'No service object for given service id'})
+
+        except Exception as e:
+            return json.dumps({'status':1, 'message':str(e)})
 
     def report(self,v):
         print('New view: ' + v.ToString())
