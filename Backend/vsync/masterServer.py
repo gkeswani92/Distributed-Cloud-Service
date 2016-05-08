@@ -37,6 +37,7 @@ class MasterServer(Thread):
         self.server.register_function(self.getProvidersForServiceTypes)
         self.server.register_function(self.registerUser)
         self.server.register_function(self.registerUserToken)
+        self.server.register_function(self.changeServiceAvailability)
 
         #Initializing/joining a vsync group and its DHT
         self.group = Vsync.Group(self.group_name)
@@ -204,6 +205,32 @@ class MasterServer(Thread):
             return json.dumps({'status': 0, 'message':'Added latest token for user'})
         else:
             return json.dumps({'status': 1, 'message':'Username does not exist'})
+
+    def changeServiceAvailability(self, id):
+        '''
+            Toggles the availability of the service
+        '''
+        serviceObj = self.group.DHTGet[(str,str)](service_id)
+        if serviceObj is not None:
+            print("Found object for service id {0} in the DHT. ".format(service_id))
+            serviceObj = dict(JavaScriptSerializer().DeserializeObject(serviceObj))
+            availability = serviceObj.get("availability")
+            serviceObj["availability"] = 0 if availability == 1 else 1
+            print("Toggled the availability")
+            self.group.DHTPut(id, json.dumps(serviceObj))
+            return json.dumps({'status': 0, 'message':'Availability has been changed'})
+        else:
+            return json.dumps({'status': 1, 'message':'Service ID does not exist'})
+
+    def updateServiceDetails(self, key, value):
+        '''
+            Updates the details of the service in the DHT
+        '''
+        try:
+            self.group.DHTPut(key, value)
+            return json.dumps({'status': 0, 'message':'Updated details'})
+        except Exception as e:
+            return json.dumps({'status':1, 'message':str(e)})
 
     def report(self,v):
         print('New view: ' + v.ToString())

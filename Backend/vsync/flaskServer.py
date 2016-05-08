@@ -184,6 +184,42 @@ def registerAndroidDeviceForGCMPush():
     except Exception as e:
         return json.dumps({'status':1, 'message':str(e)})
 
+@app.route("/changeServiceAvailability",methods=['POST'])
+def changeServiceAvailability():
+    serviceID = request.form.get('serviceID')
+    try:
+        if serviceID is not None:
+            return proxy.changeServiceAvailability(serviceID)
+        else:
+            return json.dumps({"status":1, "message":"All params were not passed"})
+    except Exception as e:
+        return json.dumps({'status':1, 'message':str(e)})
+
+@app.route("/updateService",methods=['POST'])
+def updateService():
+    serviceID = request.form.get('serviceID')
+    name = request.form.get('name')
+    serviceType = request.form.get('type')
+    location = request.form.get('location')
+    cost = request.form.get('cost')
+    description = request.form.get('description')
+
+    try:
+        if serviceID and name and serviceType and location and cost and description:
+            serviceObj = {  "id"            : serviceID,
+                            "name"          : name,
+                            "type"          : serviceType,
+                            "location"      : location,
+                            "cost"          : cost,
+                            "description"   : description,
+                            "availability"  : 0 }
+            return proxy.updateServiceDetails(serviceID, json.dumps(serviceObj))
+        else:
+            return json.dumps({"status":1, "message":"All params were not passed"})
+    except Exception as e:
+        return json.dumps({'status':1, 'message':str(e)})
+
+
 @app.route("/sendTestPush",methods=['GET','POST'])
 def sendTestPush():
     global device_token
@@ -208,30 +244,6 @@ def sendTestPush():
     data = {}
     data["status"] = "0"
     return json.dumps(data)
-
-
-@app.route("/changeServiceAvailability",methods=['POST'])
-def changeServiceAvailability():
-    id = request.form.get('serviceID')
-    # insert logic here to delete the service object
-    reply = {}
-    reply["status"] = 0
-    reply["message"] = "Success"
-    return json.dumps(reply)
-
-@app.route("/updateService",methods=['POST'])
-def updateService():
-    id = request.form.get('serviceID')
-    name = request.form.get('name')
-    type = request.form.get('type')
-    location = request.form.get('location')
-    cost = request.form.get('cost')
-    description = request.form.get('description')
-    # insert logic here to delete the service object
-    reply = {}
-    reply["status"] = 0
-    reply["message"] = "Success"
-    return json.dumps(reply)
 
 ############################ UTILITY METHODS ###################################
 
