@@ -201,7 +201,7 @@ class MasterServer(Thread):
             userObj = dict(JavaScriptSerializer().DeserializeObject(userObj))
             userObj["token"] = token
             self.group.DHTPut(username, json.dumps(userObj))
-            return ({'status': 0, 'message':'Adden latest token to user'})
+            return json.dumps({'status': 0, 'message':'Added latest token for user'})
         else:
             return json.dumps({'status': 1, 'message':'Username does not exist'})
 
