@@ -38,6 +38,8 @@ class MasterServer(Thread):
         self.server.register_function(self.registerUser)
         self.server.register_function(self.registerUserToken)
         self.server.register_function(self.changeServiceAvailability)
+        self.server.register_function(self.updateServiceDetails)
+        self.server.register_function(self.deleteService)
 
         #Initializing/joining a vsync group and its DHT
         self.group = Vsync.Group(self.group_name)
@@ -229,6 +231,40 @@ class MasterServer(Thread):
         try:
             self.group.DHTPut(key, value)
             return json.dumps({'status': 0, 'message':'Updated details'})
+        except Exception as e:
+            return json.dumps({'status':1, 'message':str(e)})
+
+    def deleteService(self, serviceID):
+        '''
+            Deletes the service details of the given service id
+        '''
+        try:
+            serviceObj = self.group.DHTGet[(str,str)](serviceID)
+
+            #If there is a corresponding service object for this id
+            if serviceObj is not None:
+                serviceObj = dict(JavaScriptSerializer().DeserializeObject(serviceObj))
+                serviceType = serviceObj.get("type")
+                print("Service Type {0}".format(serviceType))
+
+                #If there are any services registered for this type
+                services = self.group.DHTGet[(str,str)](serviceType)
+                if services is not None:
+                    services = list(JavaScriptSerializer().DeserializeObject(services))
+                    print("List of services under {0} : {1}".format(serviceType, json.dumps(services)))
+
+                    #If the service id is registered under the type of service
+                    if serviceID in services:
+                        services.remove(serviceID)
+                        self.group.DHTPut(serviceType, json.dumps(services))
+                        return json.dumps({'status': 0, 'message':'Deleted details'})
+                    else:
+                        return json.dumps({'status': 1, 'message':'Service ID not in service list'})
+                else:
+                    return json.dumps({'status': 1, 'message':'No services found for this service type'})
+            else:
+                return json.dumps({'status': 1, 'message':'No service object for given service id'})
+
         except Exception as e:
             return json.dumps({'status':1, 'message':str(e)})
 

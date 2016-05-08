@@ -219,6 +219,16 @@ def updateService():
     except Exception as e:
         return json.dumps({'status':1, 'message':str(e)})
 
+@app.route("/deleteService",methods=['POST'])
+def deleteService():
+    serviceID = request.form.get('serviceID')
+    try:
+        if serviceID is not None:
+            return proxy.deleteService(serviceID)
+        else:
+            return json.dumps({"status":1, "message":"All params were not passed"})
+    except Exception as e:
+        return json.dumps({'status':1, 'message':str(e)})
 
 @app.route("/sendTestPush",methods=['GET','POST'])
 def sendTestPush():
@@ -246,16 +256,6 @@ def sendTestPush():
     return json.dumps(data)
 
 ############################ UTILITY METHODS ###################################
-
-# remove service from availability list when it is declared off on device - stub created by Andy
-@app.route("/deleteService",methods=['POST'])
-def deleteService():
-    id = request.form.get('serviceID')
-    # insert logic here to delete the service object
-    reply = {}
-    reply["status"] = 0
-    reply["message"] = "success"
-    return json.dumps(reply)
 
 # /users
 # GET: return a list of all users
