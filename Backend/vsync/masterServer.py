@@ -40,6 +40,7 @@ class MasterServer(Thread):
         self.server.register_function(self.changeServiceAvailability)
         self.server.register_function(self.updateServiceDetails)
         self.server.register_function(self.deleteService)
+        self.server.register_function(self.getUserToken)
 
         #Initializing/joining a vsync group and its DHT
         self.group = Vsync.Group(self.group_name)
@@ -267,6 +268,22 @@ class MasterServer(Thread):
 
         except Exception as e:
             return json.dumps({'status':1, 'message':str(e)})
+
+    def getUserToken(self, username):
+        '''
+            Returns the token of the user if one has been registered
+        '''
+        userObj = self.group.DHTGet[(str,str)](username)
+        if userObj is not None:
+            userObj = dict(JavaScriptSerializer().DeserializeObject(userObj))
+            token = userObj.get("token",None)
+
+            if token is not None:
+                return json.dumps({'status': 0, 'token':token})
+            else:
+                json.dumps({'status': 1, 'message':'Could not find user token'})
+        else:
+            return json.dumps({'status': 1, 'message':'Could not find user data'})
 
     def report(self,v):
         print('New view: ' + v.ToString())

@@ -263,29 +263,25 @@ def replyRequest():
     decision = request.form.get("decision")
     requestorUsername = request.form.get("requestorUsername")
 
-    # TODO:
-    # use requestorUsername to find the push token associated with this SR account
-    # for now, the stub will always pass a hard-coded token for Andy's device
+    #Deciding the contents of the push message
+    messageTitle = 'Service Request Accepted!' if decision == 'yes' else 'Service Request Declined!'
+    data = 'Your service request has been accepted! The ETA is ' + request.form.get("eta") + 'mins' if decision == 'yes' else 'Your service request has been declined! We hope you can find another similar service on Handy'
 
-    push_data = {}
-    if decision == 'yes':
-        eta = request.form.get("eta")
-        push_data['messageTitle'] = 'Service Request Accepted!'
-        push_data['data'] = 'Your service request has been accepted! The ETA is ' + eta + 'mins'
-    elif decision == 'no':
-        push_data['messageTitle'] = 'Service Request Declined!'
-        push_data['data'] = 'Your service request has been declined! We hope you can find another similar service on Handy'
+    push_data = { 'messageTitle' : messageTitle,
+                  'data'         : data }
 
-    tokens = {}
-    tokens['temp'] = 'APA91bFSHof2tUrxsTXUdbXAPanrKwzyenKdiV6YKcKW1ZHO0krUE0AWWMiPKx8YRmXLMHgYPXb9CS6VKjozrglEtiQiVRWWn5bbU26-eKttZe5JwdjPLhhV5IMfbupyy0KdasgR-fs2'
-    sendTestPush(tokens, push_data)
-    data = {}
-    data["status"] = "0"
-    return json.dumps(data)
+    #Finding the users token to send the push message
+    tokens = proxy.getUserToken(requestorUsername)
+    if tokens is not None and tokens["status"] == 0:
+        sendTestPush(tokens, push_data)
+        return json.dumps({"status":0})
+    else:
+        return json.dumps({"status":1})
 
 def sendTestPush(tokens, data):
     response = gcm.json_request(registration_ids=tokens.values(), data=data)
     return 0
+
 ################################################################################
 
 ############################ TESTING METHODS####################################
