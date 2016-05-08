@@ -242,7 +242,9 @@ def requestService():
     #Using the service ID to figure out the token of the service provider and sending
     #a push notification
     serviceProviderDetails = proxy.getServiceProviderTokenFromServiceID(serviceID)
-    if getServiceProviderTokenFromServiceID["status"] == 0:
+    serviceProviderDetails = json.loads(serviceProviderDetails)
+
+    if serviceProviderDetails["status"] == 0:
         push_data = { 'messageTitle'      : 'Service Requested',
                       'address'           : address,
                       'requestorUsername' : requestorUsername,
@@ -261,13 +263,14 @@ def replyRequest():
 
     #Deciding the contents of the push message
     messageTitle = 'Service Request Accepted!' if decision == 'yes' else 'Service Request Declined!'
-    data = 'Your service request has been accepted! The ETA is ' + request.form.get("eta") + 'mins' if decision == 'yes' else 'Your service request has been declined! We hope you can find another similar service on Handy'
+    data = 'Your service request has been accepted! The ETA is ' + request.form.get("eta") + ' mins' if decision == 'yes' else 'Your service request has been declined! We hope you can find another similar service on Handy'
 
     push_data = { 'messageTitle' : messageTitle,
                   'data'         : data }
 
     #Finding the users token to send the push message
     tokens = proxy.getUserToken(requestorUsername)
+    tokens = json.loads(tokens)
     if tokens is not None and tokens["status"] == 0:
         sendTestPush(tokens, push_data)
         return json.dumps({"status":0})
