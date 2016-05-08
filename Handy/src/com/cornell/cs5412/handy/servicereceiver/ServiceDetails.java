@@ -29,13 +29,10 @@ public class ServiceDetails extends Activity
 {
 	private TextView textViewServicetype;
 	private TextView textViewCost;
-	private TextView textViewrating;
 	private TextView textViewDescription;
 	private TextView textViewServiceName;
 	private String serviceID;
 	private Button btnRequest;
-	private Button btnSubmitReview;
-	private ProgressDialog progress;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -51,7 +48,6 @@ public class ServiceDetails extends Activity
 		textViewServiceName = (TextView) findViewById(R.id.textViewServiceName);
 		textViewServicetype = (TextView) findViewById(R.id.textViewServicetype);
 		textViewCost = (TextView) findViewById(R.id.textViewCost);
-		textViewrating = (TextView) findViewById(R.id.textViewrating);
 		textViewDescription = (TextView) findViewById(R.id.textViewDescription);
 		btnRequest = (Button) findViewById(R.id.btnRequest);
 		
@@ -75,66 +71,11 @@ public class ServiceDetails extends Activity
 			btnRequest.setText("Request Service");
 		}
 		
-		progress = new ProgressDialog(this);
+		//textViewServiceName.setText("Service Name: " + name);
+		//textViewServicetype.setText("Type of Service: " + type);
+		//textViewCost.setText("Hourly Cost: $" + cost);
+		//textViewDescription.setText("Description: " + description);
 		
-		Globals.showProgress(progress, "Loading...");
-		Thread t2 = new Thread(new Runnable() {
-			public void run()
-			{
-				try
-				{
-					ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-					params.add(new BasicNameValuePair("serviceID", serviceID));
-					
-					final JSONObject json = DataTransfer.getJSONResult(Globals.ipAddress + "/getServiceDetails", params);
-					final JSONObject jsonData = json.optJSONObject("data");
-
-					runOnUiThread(new Runnable(){
-						public void run()
-						{
-							if (progress.isShowing())
-								progress.dismiss();
-								
-							String name = jsonData.optString("name");
-							String type = jsonData.optString("type");
-							String cost = jsonData.optString("cost");
-							String description = jsonData.optString("description");
-							String rating = jsonData.optString("rating");
-							
-							textViewServiceName.setText("Service Name: " + name);
-							textViewServicetype.setText("Type of Service: " + type);
-							textViewCost.setText("Hourly Cost: $" + cost);
-							if(rating.equalsIgnoreCase("-1"))
-								textViewrating.setText("Rating: unrated");
-							else
-								textViewrating.setText("Rating: " + rating + "/5");
-							textViewDescription.setText("Description: " + description);
-							
-							btnRequest.setVisibility(View.VISIBLE);
-						}
-					});
-				}
-				catch (Exception e)
-				{
-					runOnUiThread(new Runnable(){
-						public void run()
-						{
-							if (progress.isShowing())
-								progress.dismiss();
-							
-							textViewServiceName.setText("");
-							textViewServicetype.setText("");
-							textViewCost.setText("");
-							textViewrating.setText("");
-							textViewDescription.setText("");
-							
-							Globals.showAlert("Error", "An error has occurred. Please try again.", ServiceDetails.this);
-						}
-					});
-				}
-			}	
-		});
-		t2.start();
 		
 		btnRequest.setOnClickListener(new OnClickListener() {
 			@Override
@@ -150,7 +91,7 @@ public class ServiceDetails extends Activity
 				else if (b.getText().toString().equalsIgnoreCase("Mark Service Complete"))
 				{
 					Globals.sharedPrefs.Remove("requestStatus"+serviceID);
-					showAlertWithOptions("Success", "Thank you for using Handy. Would you like to submit a review for this service provider?", ServiceDetails.this);
+					showAlert("Success", "Thank you for using Handy!", ServiceDetails.this);
 				}
 			}
 		});
@@ -163,7 +104,7 @@ public class ServiceDetails extends Activity
 		setupScreen();
 	}
 	
-	public void showAlertWithOptions(final String title, final String message, final Activity activity) 
+	/*public void showAlertWithOptions(final String title, final String message, final Activity activity) 
 	{
 		try 
 		{
@@ -204,7 +145,7 @@ public class ServiceDetails extends Activity
 			e.printStackTrace();
 		}
 
-	}
+	}*/
 	
 	public void showAlert(final String title, final String message, final Activity activity) 
 	{

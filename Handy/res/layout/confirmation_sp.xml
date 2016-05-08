@@ -1,12 +1,92 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="${relativePackage}.${activityClass}" >
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/contentPane"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/layout_purple"
+    android:orientation="vertical" >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+	<RelativeLayout
+	    android:id="@+id/linearLayout5"
+	    android:background="@color/background_purple"
+	    android:layout_width="fill_parent"
+	    android:layout_height="50dp" >
 
-</RelativeLayout>
+		<TextView
+		    android:id="@+id/textViewTitle"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_centerHorizontal="true"
+		    android:layout_centerVertical="true"
+			android:text="Handy"
+			android:textStyle="bold"
+			android:textColor="@color/black"
+			android:textSize="30sp" />
+		
+	</RelativeLayout>
+
+	<ScrollView 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        
+       	<LinearLayout
+       	    android:layout_height="wrap_content"
+       	    android:layout_width="match_parent"
+       	    android:orientation="vertical"
+       	    android:layout_margin="10dp"
+       	    android:id="@+id/linearLayoutContent">
+       	    
+       	    <TextView
+       	        android:id="@+id/textViewRequestDetails"
+       	        android:layout_width="wrap_content"
+       	        android:layout_height="wrap_content"
+       	        android:text="You have received a request from xxx please fill in your estimated time of arrival below or decline the request."
+       	        android:textSize="16sp"
+       	        android:layout_marginBottom="10dp"
+       	        android:textColor="@color/black"
+       	        android:textStyle="bold"/>
+       	    
+       	  	<TextView
+       	        android:layout_width="wrap_content"
+       	        android:layout_height="wrap_content"
+       	        android:layout_marginTop="15dp"
+       	        android:text="ETA (in minutes):"
+       	        android:textSize="16sp"
+       	        android:layout_marginBottom="10dp"
+       	        android:textColor="@color/black"
+       	        android:textStyle="bold"/>
+       	  	
+       	  	<EditText
+        		android:layout_width="match_parent"
+        		android:layout_height="wrap_content"
+        		android:layout_marginBottom="10dp"
+        		android:ellipsize="end"
+        		android:maxLines="1"
+        		android:textColor="@color/black"
+        		android:background="@drawable/edittext_default_bg"
+        		android:id="@+id/edittextEta"
+        		android:paddingLeft="10dp"
+        		android:paddingRight="10dp"
+        		android:inputType="number"
+        		android:hint="ETA in minutes"/>
+       	  	
+			
+			<Button 
+			    android:layout_height="wrap_content"
+			    android:layout_width="match_parent"
+			    android:layout_marginBottom="10dp"
+			    android:text="Accept Request"
+			    android:id="@+id/btnAccept"/>
+			
+			<Button 
+			    android:layout_height="wrap_content"
+			    android:layout_width="match_parent"
+			    android:layout_marginBottom="10dp"
+			    android:text="Decline Request"
+			    android:id="@+id/btnDecline"/>
+       	    
+       	</LinearLayout>
+        
+    </ScrollView>
+       			
+</LinearLayout>

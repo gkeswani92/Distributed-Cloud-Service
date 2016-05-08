@@ -124,7 +124,7 @@ public class DataTransfer
 				buffer.append(params.get(i).getName() + "="	+ params.get(i).getValue());
 			}
 			
-			Log.e("CS5999", "REQUEST URL in connection " + buffer.toString());
+			Log.e("Handy", "REQUEST URL in connection " + buffer.toString());
 			
 			HttpConnectionParams.setConnectionTimeout(httpGet.getParams(), timeoutConnection);
 			HttpConnectionParams.setSoTimeout(httpGet.getParams(), timeoutSocket);

@@ -22,6 +22,8 @@ import android.util.Log;
 
 import com.cornell.cs5412.handy.R;
 import com.cornell.cs5412.handy.gcm.GCMUtilities;
+import com.cornell.cs5412.handy.serviceprovider.SPConfirmation;
+import com.cornell.cs5412.handy.servicereceiver.SRHomeSearch;
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
 
@@ -91,18 +93,19 @@ public class GCMIntentService extends GCMBaseIntentService
 		{
 			String key = (String) i.next();
 			String value = bundle.getString(key);
-			Log.d("CAA", "key: " + key + " value: " + value);
+			Log.d("Handy", "key: " + key + " value: " + value);
 		}
 
+		String messageTitle = intent.getExtras().getString("messageTitle");
 		String message = intent.getExtras().getString("data");
-		String restaurantName = intent.getExtras().getString("restaurant");
-		String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+		String address = intent.getExtras().getString("address");
+		String requestorUsername = intent.getExtras().getString("requestorUsername");
 		
 		// display message
 		displayMessage(context, message);
 		
 		// notifies user
-		generateNotification(context, message, "");
+		generateNotification(context, message, messageTitle, address, requestorUsername);
 		
         Intent intent2 = new Intent();
         intent2.putExtra("messageID", "");
@@ -139,19 +142,23 @@ public class GCMIntentService extends GCMBaseIntentService
 	/**
 	 * Issues a notification to inform the user that server has sent a message.
 	 */
-	private static void generateNotification(Context context, String message, String messageId)
+	private static void generateNotification(Context context, String message, String messageTitle, String address, String requestorUsername)
 	{
 		int icon = R.drawable.ic_launcher;
 		long when = System.currentTimeMillis();
 		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		Notification notification = new Notification(icon, message, when);
 		String title = "Handy";
-		Intent notificationIntent = new Intent(context, LaunchActivity.class);
-		notificationIntent.putExtra("push", true);
-		//notificationIntent.putExtra(Consts.PUSH_EXPAND_ID, messageId);
-		notificationIntent.setAction(Long.toString(System.currentTimeMillis()));
 		
-		//Log.d("ANDY", "inside generateNotification....messageId: " + messageId);
+		Intent notificationIntent;
+		if (messageTitle.equalsIgnoreCase("Service Requested"))
+			notificationIntent= new Intent(context, SPConfirmation.class);
+		else
+			notificationIntent= new Intent(context, SRHomeSearch.class);
+		
+		notificationIntent.putExtra("requestorUsername", requestorUsername);
+		notificationIntent.putExtra("address", address);		
+		notificationIntent.setAction(Long.toString(System.currentTimeMillis()));
 		
 		// Get instance of Vibrator from current Context
 		Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);

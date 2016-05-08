@@ -233,30 +233,60 @@ def deleteService():
     except Exception as e:
         return json.dumps({'status':1, 'message':str(e)})
 
-@app.route("/sendTestPush",methods=['GET','POST'])
-def sendTestPush():
-    global device_token
-    global counter
-    if (counter % 5) == 0:
-        data = {'messageTitle': 'Test PUSH Message', 'data': 'This is a test PUSH message'}
-    elif (counter % 5) == 1:
-        data = {'messageTitle': 'Test PUSH Message', 'data': 'Hello World!'}
-    elif (counter % 5) == 2:
-        data = {'messageTitle': 'Test PUSH Message', 'data': 'How are you doing today?'}
-    elif (counter % 5) == 3:
-        data = {'messageTitle': 'Test PUSH Message', 'data': 'Welcome to Handy!'}
-    elif (counter % 5) == 4:
-        data = {'messageTitle': 'Test PUSH Message', 'data': 'Someone has requested your service!'}
+#########################ANDY's MODIFICATIONS################################
+@app.route("/requestService",methods=['GET','POST'])
+def requestService():
+    serviceID = request.form.get("serviceID")
+    address = request.form.get("address")
+    requestorUsername = request.form.get("username")
 
-    print device_token.values()
+    # TODO:
+    # use serviceID to find the SP associated with this service
+    # once we find the SP, we can find the push token assoicated with this SP account
+    # for now, the stub will always pass a hard-coded push token for Andy's device
+    # note the address and reqestorUsername param will be part of the PUSH so server don't need to do anything with it
 
-    # JSON request
-    response = gcm.json_request(registration_ids=device_token.values(), data=data)
-
-    counter = counter+1
+    push_data = {}
+    push_data['messageTitle'] = 'Service Requested'
+    push_data["address"] = address
+    push_data["requestorUsername"] = requestorUsername
+    push_data['data'] = 'Someone has requested for your service! Open the app to see more details!'
+    tokens = {}
+    tokens['temp'] = 'APA91bFSHof2tUrxsTXUdbXAPanrKwzyenKdiV6YKcKW1ZHO0krUE0AWWMiPKx8YRmXLMHgYPXb9CS6VKjozrglEtiQiVRWWn5bbU26-eKttZe5JwdjPLhhV5IMfbupyy0KdasgR-fs2'
+    sendTestPush(tokens, push_data)
     data = {}
     data["status"] = "0"
     return json.dumps(data)
+
+@app.route("/replyRequest",methods=['GET','POST'])
+def replyRequest():
+    decision = request.form.get("decision")
+    requestorUsername = request.form.get("requestorUsername")
+
+    # TODO:
+    # use requestorUsername to find the push token associated with this SR account
+    # for now, the stub will always pass a hard-coded token for Andy's device
+
+    push_data = {}
+    if decision == 'yes':
+        eta = request.form.get("eta")
+        push_data['messageTitle'] = 'Service Request Accepted!'
+        push_data['data'] = 'Your service request has been accepted! The ETA is ' + eta + 'mins'
+    elif decision == 'no':
+        push_data['messageTitle'] = 'Service Request Declined!'
+        push_data['data'] = 'Your service request has been declined! We hope you can find another similar service on Handy'
+
+    tokens = {}
+    tokens['temp'] = 'APA91bFSHof2tUrxsTXUdbXAPanrKwzyenKdiV6YKcKW1ZHO0krUE0AWWMiPKx8YRmXLMHgYPXb9CS6VKjozrglEtiQiVRWWn5bbU26-eKttZe5JwdjPLhhV5IMfbupyy0KdasgR-fs2'
+    sendTestPush(tokens, push_data)
+    data = {}
+    data["status"] = "0"
+    return json.dumps(data)
+
+def sendTestPush(tokens, data):
+    response = gcm.json_request(registration_ids=tokens.values(), data=data)
+    return 0
+################################################################################
 
 ############################ TESTING METHODS####################################
 

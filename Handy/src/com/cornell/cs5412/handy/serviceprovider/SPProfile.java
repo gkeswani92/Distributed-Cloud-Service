@@ -229,11 +229,15 @@ public class SPProfile extends Activity
 				{
 					ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 					params.add(new BasicNameValuePair("name", name));
+					params.add(new BasicNameValuePair("username", Globals.sharedPrefs.getString("username")));
 					params.add(new BasicNameValuePair("type", type));
 					params.add(new BasicNameValuePair("location", location));
 					params.add(new BasicNameValuePair("cost", cost));
 					params.add(new BasicNameValuePair("description", description));
-					params.add(new BasicNameValuePair("availability", availability.toString()));
+					if(availability)
+						params.add(new BasicNameValuePair("availability", "0"));
+					else
+						params.add(new BasicNameValuePair("availability", "1"));
 					
 					final JSONObject json = DataTransfer.postJSONResult(Globals.ipAddress + "/postService", params);
 

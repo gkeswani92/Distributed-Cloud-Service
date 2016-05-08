@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class LaunchActivity extends Activity {
 
@@ -22,6 +23,8 @@ public class LaunchActivity extends Activity {
 
 		// setup preference storage
 		loadPreferences(LaunchActivity.this);
+		
+		Log.e("Handy", "Launching Activity");
 		
 		//intent = new Intent().setClass(LaunchActivity.this, SRHomeSearch.class);
 		//intent.putExtra("serviceID", "1");

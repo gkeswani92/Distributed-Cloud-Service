@@ -13,6 +13,7 @@ import com.cornell.cs5412.handy.Globals;
 import com.cornell.cs5412.handy.R;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +32,7 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class SRHomeSearch extends Activity 
 {
@@ -64,6 +66,9 @@ public class SRHomeSearch extends Activity
 	    
 	    ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, R.layout.spinner_cell, categories);
 	    spinnerServiceType.setAdapter(dataAdapter);
+	    
+	    searchResult.addView(createDirectionStepLayout("0", "Bob", "Gardening", "25", "yes"));
+	    searchResult.addView(createDirectionStepLayout("1", "Bob", "Plumbing", "35", "yes"));
 		
 		btnSearch = (Button)findViewById(R.id.btnSearch);
 		btnSearch.setOnClickListener(new OnClickListener() {
@@ -79,7 +84,7 @@ public class SRHomeSearch extends Activity
 				}
 				else
 				{
-					editSearch.setText("");
+					//editSearch.setText("");
 					createServiceList(spinnerServiceType.getSelectedItem().toString(), editSearch.getText().toString());
 				}
 			}
@@ -101,43 +106,48 @@ public class SRHomeSearch extends Activity
 				try
 				{
 					ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+					
+					Log.e("Handy", serviceLocation);
+					
 					params.add(new BasicNameValuePair("location", serviceLocation));
 					params.add(new BasicNameValuePair("serviceType", serviceType));
 					
 					final JSONObject json = DataTransfer.getJSONResult(Globals.ipAddress + "/getService", params);
 					
-					Log.e("CS5999", "Response: " + json.toString());
+					Log.e("Handy", "Response: " + json.toString());
 					
-					//Globals.showAlert("Server Response", json.toString(), SRHomeSearch.this);
 					
-					final JSONArray jsonArray = json.optJSONArray("data");
-
-					runOnUiThread(new Runnable(){
-						public void run()
-						{
-							if (progress.isShowing())
-								progress.dismiss();
-								
-							int length = jsonArray.length();
-							for (int i = 0; i < length; i++) 
+					if (json.optInt("status") == 0)
+					{
+						final JSONArray jsonArray = new JSONArray(json.optJSONObject("data").optString("data"));
+					
+						runOnUiThread(new Runnable(){
+							public void run()
 							{
-								try
+								if (progress.isShowing())
+									progress.dismiss();
+								
+								int length = jsonArray.length();
+								for (int i = 0; i < length; i++) 
 								{
-									JSONObject serviceObj = jsonArray.getJSONObject(i);
-									String name = serviceObj.optString("name");
-									String type = serviceObj.optString("type");
-									String cost = serviceObj.optString("cost");
-									String id = serviceObj.optString("id");
-									String availability = serviceObj.optString("availability");
-									searchResult.addView(createDirectionStepLayout(id, name, type, cost, availability));
-								}
-								catch (Exception e)
-								{
-									e.printStackTrace();
+									try
+									{
+										JSONObject serviceObj = jsonArray.getJSONObject(i);
+										String name = serviceObj.optString("name");
+										String type = serviceObj.optString("type");
+										String cost = serviceObj.optString("cost");
+										String id = serviceObj.optString("id");
+										String availability = serviceObj.optString("availability");
+										searchResult.addView(createDirectionStepLayout(id, name, type, cost, availability));
+									}
+									catch (Exception e)
+									{
+										e.printStackTrace();
+									}
 								}
 							}
-						}
-					});
+						});
+					}
 				}
 				catch (Exception e)
 				{
@@ -182,13 +192,105 @@ public class SRHomeSearch extends Activity
 		serviceCost.setText("Cost: $" + cost + "/hr");
 		serviceAvailability.setText("Availability: " + availability);
 		
+		// setup the custom dialog box
+		final Dialog dialog = new Dialog(SRHomeSearch.this);
+		dialog.setContentView(R.layout.custom_dialog);
+		dialog.setTitle("Request Service Confirmation");
+		
+		final EditText edittextAddress = (EditText) dialog.findViewById(R.id.edittextAddress);
+		Button btnRequest = (Button) dialog.findViewById(R.id.btnRequest);
+		btnRequest.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) 
+			{
+				final String address = edittextAddress.getText().toString();
+				if(address.equalsIgnoreCase(""))
+				{
+					Toast.makeText(SRHomeSearch.this, "Please fill our your current location address", Toast.LENGTH_SHORT).show();
+				}
+				else
+				{
+					dialog.dismiss();
+					Globals.showProgress(progress, "Loading...");
+					Thread t2 = new Thread(new Runnable() {
+						public void run()
+						{
+							try
+							{
+								ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+								
+								params.add(new BasicNameValuePair("serviceID", id));
+								params.add(new BasicNameValuePair("address", address));
+								params.add(new BasicNameValuePair("username", Globals.sharedPrefs.getString("username")));
+								
+								final JSONObject json = DataTransfer.postJSONResult(Globals.ipAddress + "/requestService", params);
+								
+								Log.e("Handy", "Response: " + json.toString());
+								
+								if (json.optInt("status") == 0)
+								{
+									runOnUiThread(new Runnable(){
+										public void run()
+										{
+											if (progress.isShowing())
+												progress.dismiss();
+											
+											Globals.showAlert("Success", "Your request has been successfully submitted, we will notify you when the service provider accepts your request!", SRHomeSearch.this);
+										}
+									});
+								}
+								else
+								{
+									runOnUiThread(new Runnable(){
+										public void run()
+										{
+											if (progress.isShowing())
+												progress.dismiss();
+												
+											Globals.showAlert("Error", "An error has occurred. Please try again.", SRHomeSearch.this);
+										}
+									});
+								}
+							}
+							catch (Exception e)
+							{
+								runOnUiThread(new Runnable(){
+									public void run()
+									{
+										if (progress.isShowing())
+											progress.dismiss();
+											
+										Globals.showAlert("Error", "An error has occurred. Please try again.", SRHomeSearch.this);
+									}
+								});
+							}
+						}	
+					});
+					t2.start();
+				}
+			}
+		});
+		
+		Button btnDismiss = (Button) dialog.findViewById(R.id.btnDismiss);
+		btnDismiss.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) 
+			{
+				dialog.dismiss();
+			}
+		});
+		
 		relativeLayout.setOnClickListener(new OnClickListener(){
 		    public void onClick(View v)
 		    {
 				// shift the user to a new activity viewing the details of the message
-				Intent intent = new Intent().setClass(SRHomeSearch.this, ServiceDetails.class);
-				intent.putExtra("serviceID", id);
-				startActivity(intent);
+				//Intent intent = new Intent().setClass(SRHomeSearch.this, ServiceDetails.class);
+				//intent.putExtra("serviceID", id);
+				//intent.putExtra("serviceID", id);
+				//intent.putExtra("serviceID", id);
+				//intent.putExtra("serviceID", id);
+				//startActivity(intent);
+		    	dialog.show();
 		    }
 		});
 		
