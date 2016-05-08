@@ -233,60 +233,50 @@ def deleteService():
     except Exception as e:
         return json.dumps({'status':1, 'message':str(e)})
 
-#########################ANDY's MODIFICATIONS################################
 @app.route("/requestService",methods=['GET','POST'])
 def requestService():
     serviceID = request.form.get("serviceID")
     address = request.form.get("address")
     requestorUsername = request.form.get("username")
 
-    # TODO:
-    # use serviceID to find the SP associated with this service
-    # once we find the SP, we can find the push token assoicated with this SP account
-    # for now, the stub will always pass a hard-coded push token for Andy's device
-    # note the address and reqestorUsername param will be part of the PUSH so server don't need to do anything with it
+    #Using the service ID to figure out the token of the service provider and sending
+    #a push notification
+    serviceProviderDetails = proxy.getServiceProviderTokenFromServiceID(serviceID)
+    if getServiceProviderTokenFromServiceID["status"] == 0:
+        push_data = { 'messageTitle'      : 'Service Requested',
+                      'address'           : address,
+                      'requestorUsername' : requestorUsername,
+                      'data'              : 'Someone has requested for your service! Open the app to see more details!'}
 
-    push_data = {}
-    push_data['messageTitle'] = 'Service Requested'
-    push_data["address"] = address
-    push_data["requestorUsername"] = requestorUsername
-    push_data['data'] = 'Someone has requested for your service! Open the app to see more details!'
-    tokens = {}
-    tokens['temp'] = 'APA91bFSHof2tUrxsTXUdbXAPanrKwzyenKdiV6YKcKW1ZHO0krUE0AWWMiPKx8YRmXLMHgYPXb9CS6VKjozrglEtiQiVRWWn5bbU26-eKttZe5JwdjPLhhV5IMfbupyy0KdasgR-fs2'
-    sendTestPush(tokens, push_data)
-    data = {}
-    data["status"] = "0"
-    return json.dumps(data)
+        tokens = {'temp':serviceProviderDetails.get("token")}
+        sendTestPush(tokens, push_data)
+        return json.dumps({"status":0})
+    else:
+        return json.dumps({"status":1})
 
 @app.route("/replyRequest",methods=['GET','POST'])
 def replyRequest():
     decision = request.form.get("decision")
     requestorUsername = request.form.get("requestorUsername")
 
-    # TODO:
-    # use requestorUsername to find the push token associated with this SR account
-    # for now, the stub will always pass a hard-coded token for Andy's device
+    #Deciding the contents of the push message
+    messageTitle = 'Service Request Accepted!' if decision == 'yes' else 'Service Request Declined!'
+    data = 'Your service request has been accepted! The ETA is ' + request.form.get("eta") + 'mins' if decision == 'yes' else 'Your service request has been declined! We hope you can find another similar service on Handy'
 
-    push_data = {}
-    if decision == 'yes':
-        eta = request.form.get("eta")
-        push_data['messageTitle'] = 'Service Request Accepted!'
-        push_data['data'] = 'Your service request has been accepted! The ETA is ' + eta + 'mins'
-    elif decision == 'no':
-        push_data['messageTitle'] = 'Service Request Declined!'
-        push_data['data'] = 'Your service request has been declined! We hope you can find another similar service on Handy'
+    push_data = { 'messageTitle' : messageTitle,
+                  'data'         : data }
 
-    tokens = {}
-    tokens['temp'] = 'APA91bFSHof2tUrxsTXUdbXAPanrKwzyenKdiV6YKcKW1ZHO0krUE0AWWMiPKx8YRmXLMHgYPXb9CS6VKjozrglEtiQiVRWWn5bbU26-eKttZe5JwdjPLhhV5IMfbupyy0KdasgR-fs2'
-    sendTestPush(tokens, push_data)
-    data = {}
-    data["status"] = "0"
-    return json.dumps(data)
+    #Finding the users token to send the push message
+    tokens = proxy.getUserToken(requestorUsername)
+    if tokens is not None and tokens["status"] == 0:
+        sendTestPush(tokens, push_data)
+        return json.dumps({"status":0})
+    else:
+        return json.dumps({"status":1})
 
 def sendTestPush(tokens, data):
     response = gcm.json_request(registration_ids=tokens.values(), data=data)
     return 0
-################################################################################
 
 ############################ TESTING METHODS####################################
 
