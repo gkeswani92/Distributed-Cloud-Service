@@ -35,6 +35,8 @@ class MasterServer(Thread):
         self.server.register_function(self.checkPassword)
         self.server.register_function(self.getServiceProvider)
         self.server.register_function(self.getProvidersForServiceTypes)
+        self.server.register_function(self.registerUser)
+        self.server.register_function(self.registerUserToken)
 
         #Initializing/joining a vsync group and its DHT
         self.group = Vsync.Group(self.group_name)
@@ -46,25 +48,27 @@ class MasterServer(Thread):
 
         #Registering functions that can be called on the VSync group
         self.group.RegisterViewHandler(Vsync.ViewHandler(self.report))
-        self.group.RegisterHandler(1, Action[str, str](self.authUser))
+        self.group.RegisterHandler(1, Action[str, str, str](self.authUser))
 
 
         #Registering snapshot handlers
-        self.group.RegisterMakeChkpt(Vsync.ChkptMaker(self.save))
-        self.group.RegisterLoadChkpt(Action[int](self.load))
-        self.group.Persistent(os.getcwd()+"/Checkpoint/snapshot")
+        #self.group.RegisterMakeChkpt(Vsync.ChkptMaker(self.save))
+        #self.group.RegisterLoadChkpt(Action[int](self.load))
+        #self.group.Persistent(os.getcwd()+"/Checkpoint/snapshot")
         self.group.Join()
 
         #Defining the types of services that are provided
         self.services = ["Plumbing", "Gardening", "Taxi", "Baby Sitting"]
-    def save(self,v):
-        print "save() called"
-        self.group.SendChkpt(someData)
-        self.group.EndOfChkpt()
 
-    def load(self,v):
-        print "load() got called"
-        print v
+    # def save(self,v):
+    #     print "save() called"
+    #     self.group.SendChkpt(someData)
+    #     self.group.EndOfChkpt()
+    #
+    # def load(self,v):
+    #     print "load() got called"
+    #     print v
+
     def getProvidersForServiceTypes(self, service_type):
         '''
             Returns the service id of all providers registered under the service type
@@ -152,16 +156,54 @@ class MasterServer(Thread):
             print("Information about Service ID {0} has been stored in the DHT {1}".format(key, value))
             return "Information about Service ID {0} has been stored in the DHT {1}".format(key, value)
 
-    def checkPassword(self,username,password):
-        print "RPC call to check username,password"
-        print "username: %s" % username
-        print "password: %s" % password
-        return self.authUser(username,password)
+    def checkPassword(self, username, password, userType):
+        '''
+            Receives the RPC call from Flask server to authenticate a user
+        '''
+        print "RPC call to for authenticating user credentials"
+        return self.authUser(username, password, userType)
 
-    def authUser(self,username,password):
-        #This should involve a call to the VSync DHT
-        print "Asking my group."
-        return username == "Natch" and password == "Password"
+    def authUser(self, username, password, userType):
+        '''
+            Receives a call from the VSync method to verify user credentials in
+            the DHT
+        '''
+        print "VSync call to DHT to verify user credentials {0} {1} {2}".format(username, password, userType)
+
+        userObj = self.group.DHTGet[(str,str)](username)
+        if userObj is not None:
+            userObj = dict(JavaScriptSerializer().DeserializeObject(userObj))
+            if userObj.get("password") == password and userObj.get("userType") == userType:
+                return json.dumps({'status': 0, 'message':'Login Success'})
+            else:
+                return json.dumps({'status': 1, 'message':'Login Invalid'})
+        else:
+            return json.dumps({'status': 1, 'message':'User Not Exist'})
+
+    def registerUser(self, username, password, userType):
+        '''
+            Registers a new user
+        '''
+        print "VSync call to DHT to insert user credentials {0} {1} {2}".format(username, password, userType)
+        userObj = self.group.DHTGet[(str,str)](username)
+        if userObj is None:
+            self.group.DHTPut(username, json.dumps({"password" : password, "userType" : userType}))
+            return json.dumps({'status': 0, 'message':'Success'})
+        else:
+            return json.dumps({'status': 1, 'message':'User Already Exists'})
+
+    def registerUserToken(self, username, userType, token):
+        '''
+            Adds a new or replaces a token if the user exists, else returns a status 1
+        '''
+        userObj = self.group.DHTGet[(str,str)](username)
+        if userObj is not None:
+            userObj = dict(JavaScriptSerializer().DeserializeObject(userObj))
+            userObj["token"] = token
+            self.group.DHTPut(username, json.dumps(userObj))
+            return ({'status': 0, 'message':'Adden latest token to user'})
+        else:
+            return json.dumps({'status': 1, 'message':'Username does not exist'})
 
     def report(self,v):
         print('New view: ' + v.ToString())

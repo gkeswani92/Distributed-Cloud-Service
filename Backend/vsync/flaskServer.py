@@ -5,6 +5,7 @@ import uuid
 
 from flask import Flask,request
 from werkzeug.contrib.cache import SimpleCache
+from gcm import GCM
 
 #Proxy server used for RPC communication between the flask process and Master server
 proxy = 0
@@ -17,15 +18,15 @@ cache = SimpleCache()
 #Time a key value pair will be stored in the local cache
 timeout = 2 * 60
 
+#Google cloud messaging tokens for push notifications
+gcm = GCM("AIzaSyAY0H3hUW5jHoUZQgqyNrQvScRqrNOmqhk")
+counter = 0 # this counter is only used to generate different messages everytime
+device_token = {}
+
 # setup some global variables and stub data
 userDBSR = {'testUserSR': 'testPassword'}
 userDBSP = {'testUserSP': 'testPassword'}
-serviceID = 1;
-serviceData = []
-serviceData.append({'id':'1', 'name':'Bob the Gardner', 'type':'Gardening', 'location':'test location', 'radius':'25', 'cost':'60', 'description':'My name is Bob', 'rating': "-1", 'availability':'yes'})
-serviceData.append({'id':'2', 'name':'Bob the Plumber', 'type':'Plumbing', 'location':'test location', 'radius':'25', 'cost':'65', 'description':'My name is Bob', 'rating': "4", 'availability':'yes'})
-serviceID += 1
-serviceID += 1
+
 
 def initializeRPC(id):
     '''
@@ -117,7 +118,7 @@ def getServiceProvider():
     '''
     #Retrieving the details of the service posted
     location = request.args.get('location')
-    service_type = request.args.get('serviceType')
+    service_type = request.args.get('type')
 
     #Getting the service providers for the requested service type
     provider = proxy.getServiceProvider(service_type, location)
@@ -139,33 +140,100 @@ def getServiceProvider():
 
     return json.dumps(reply, indent=4, separators=(',', ': '))
 
-# authenticate users - stub created by Andy
+@app.route("/createUser",methods=['POST'])
+def createUser():
+    username = request.form.get("username")
+    password = request.form.get("password")
+    userType = request.form.get("userType")
+
+    try:
+        if username and password and userType:
+            return proxy.registerUser(username, password, userType)
+        else:
+            return json.dumps({'status':1, 'message':'Did not receive all params'})
+    except Exception as e:
+        return json.dumps({'status':1, 'message':str(e)})
+
 @app.route("/authenticate",methods=['GET','POST'])
 def authUsers():
-    if request.method == 'GET':
-        username = request.args.get('username')
-        password = request.args.get('password')
-        userType = request.args.get('userType')
-    elif request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        userType = request.form.get('userType')
+    username = request.args.get('username') or request.form.get('username')
+    password = request.args.get('password') or request.form.get('password')
+    userType = request.args.get('userType') or request.form.get('userType')
 
-    if userType == 'sr':
-        if username not in userDBSR:
-            return json.dumps({'status': 1, 'message':'User Not Exist'})
-        elif userDBSR[username] == password:
-            return json.dumps({'status': 0, 'message':'Login Success'})
+    try:
+        if username and password and userType:
+            return proxy.checkPassword(username, password, userType)
         else:
-            return json.dumps({'status': 1, 'message':'Login Invalid'})
+            return json.dumps({'status':1, 'message':'Did not receive all params'})
+    except Exception as e:
+        return json.dumps({'status':1, 'message':str(e)})
 
-    if userType == 'sp':
-        if username not in userDBSP:
-            return json.dumps({'status': 1, 'message':'User Not Exist'})
-        elif userDBSP[username] == password:
-            return json.dumps({'status': 0, 'message':'Login Success'})
+@app.route("/registerAndroidDeviceForGCMPush",methods=['POST'])
+def registerAndroidDeviceForGCMPush():
+    global device_token
+    username = request.form.get("username")
+    userType = request.form.get("userType")
+    token = request.form.get("new_push_device_token")
+
+    try:
+        if username and userType and token:
+            return proxy.registerUserToken(username, userType, token)
         else:
-            return json.dumps({'status': 1, 'message':'Login Invalid'})
+            return json.dumps({'status':1, 'message':'Did not receive all params'})
+
+    except Exception as e:
+        return json.dumps({'status':1, 'message':str(e)})
+
+@app.route("/sendTestPush",methods=['GET','POST'])
+def sendTestPush():
+    global device_token
+    global counter
+    if (counter % 5) == 0:
+        data = {'messageTitle': 'Test PUSH Message', 'data': 'This is a test PUSH message'}
+    elif (counter % 5) == 1:
+        data = {'messageTitle': 'Test PUSH Message', 'data': 'Hello World!'}
+    elif (counter % 5) == 2:
+        data = {'messageTitle': 'Test PUSH Message', 'data': 'How are you doing today?'}
+    elif (counter % 5) == 3:
+        data = {'messageTitle': 'Test PUSH Message', 'data': 'Welcome to Handy!'}
+    elif (counter % 5) == 4:
+        data = {'messageTitle': 'Test PUSH Message', 'data': 'Someone has requested your service!'}
+
+    print device_token.values()
+
+    # JSON request
+    response = gcm.json_request(registration_ids=device_token.values(), data=data)
+
+    counter = counter+1
+    data = {}
+    data["status"] = "0"
+    return json.dumps(data)
+
+
+@app.route("/changeServiceAvailability",methods=['POST'])
+def changeServiceAvailability():
+    id = request.form.get('serviceID')
+    # insert logic here to delete the service object
+    reply = {}
+    reply["status"] = 0
+    reply["message"] = "Success"
+    return json.dumps(reply)
+
+@app.route("/updateService",methods=['POST'])
+def updateService():
+    id = request.form.get('serviceID')
+    name = request.form.get('name')
+    type = request.form.get('type')
+    location = request.form.get('location')
+    cost = request.form.get('cost')
+    description = request.form.get('description')
+    # insert logic here to delete the service object
+    reply = {}
+    reply["status"] = 0
+    reply["message"] = "Success"
+    return json.dumps(reply)
+
+############################ UTILITY METHODS ###################################
 
 # remove service from availability list when it is declared off on device - stub created by Andy
 @app.route("/deleteService",methods=['POST'])
@@ -250,6 +318,8 @@ def service(uid,sid):
     else:
         return "invalid input"
 
+############################ TESTING METHODS####################################
+
 @app.route("/balancing_get",methods=['GET'])
 def balancing_get():
     location = request.args.get('location')
@@ -326,93 +396,6 @@ def testget():
             display_message = "No key was passed to the testGet method"
 
     return display_message
-
-######################GCM + Other Stub Functions######################
-from gcm import GCM
-gcm = GCM("AIzaSyAY0H3hUW5jHoUZQgqyNrQvScRqrNOmqhk")
-counter = 0 # this counter is only used to generate different messages everytime
-device_token = {}
-
-@app.route("/registerAndroidDeviceForGCMPush",methods=['POST'])
-def registerAndroidDeviceForGCMPush():
-    global device_token
-    user_email = request.form.get("username")
-    user_type = request.form.get("userType")
-    new_token = request.form.get("new_push_device_token")
-    
-    if user_email not in device_token:
-	    device_token[user_email] = new_token
-    elif user_email in device_token and device_token[user_email] != new_token:
-        device_token[user_email] = new_token
-
-    data = {}
-    data["status"] = "0"
-    print device_token
-    return json.dumps(data)
-
-@app.route("/sendTestPush",methods=['GET','POST'])
-def sendTestPush():
-    global device_token
-    global counter
-    if (counter % 5) == 0:
-        data = {'messageTitle': 'Test PUSH Message', 'data': 'This is a test PUSH message'}
-    elif (counter % 5) == 1:
-        data = {'messageTitle': 'Test PUSH Message', 'data': 'Hello World!'}
-    elif (counter % 5) == 2:
-        data = {'messageTitle': 'Test PUSH Message', 'data': 'How are you doing today?'}
-    elif (counter % 5) == 3:
-        data = {'messageTitle': 'Test PUSH Message', 'data': 'Welcome to Handy!'}
-    elif (counter % 5) == 4:
-        data = {'messageTitle': 'Test PUSH Message', 'data': 'Someone has requested your service!'}
-	
-    print device_token.values()
-
-    # JSON request
-    response = gcm.json_request(registration_ids=device_token.values(), data=data)
-
-    counter = counter+1
-    data = {}
-    data["status"] = "0"
-    return json.dumps(data)
-
-@app.route("/createUser",methods=['POST'])
-def createUser():
-    username = request.form.get("username")
-    password = request.form.get("password")
-    user_type = request.form.get("userType")
-    if user_type == 'sp':
-        userDBSP[username] = password
-    if user_type == 'sr':
-        userDBSR[username] = password
-    reply = {}
-    reply["status"] = 0
-    reply["message"] = "success"
-    return json.dumps(reply)
-
-@app.route("/updateService",methods=['POST'])
-def updateService():
-    id = request.form.get('serviceID')
-    name = request.form.get('name')
-    type = request.form.get('type')
-    location = request.form.get('location')
-    cost = request.form.get('cost')
-    description = request.form.get('description')
-    # insert logic here to delete the service object
-    reply = {}
-    reply["status"] = 0
-    reply["message"] = "Success"
-    return json.dumps(reply)
-
-@app.route("/changeServiceAvailability",methods=['POST'])
-def changeServiceAvailability():
-    id = request.form.get('serviceID')
-    # insert logic here to delete the service object
-    reply = {}
-    reply["status"] = 0
-    reply["message"] = "Success"
-    return json.dumps(reply)
-
-#########################################################
 
 if __name__ == "__main__":
     startFlaskServer(sys.argv[1])
