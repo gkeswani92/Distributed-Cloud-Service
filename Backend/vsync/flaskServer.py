@@ -76,18 +76,21 @@ def postService():
     location = request.form.get('location')
     cost = request.form.get('cost')
     description = request.form.get('description')
+    username = request.form.get('username')
+    availability = request.form.get('availability')
 
     #Every posted service will have a unique UUID as its service id
     serviceID = str(uuid.uuid1())
 
-    if name and service_type and location and cost and description:
+    if name and service_type and location and cost and description and username and availability:
         serviceObj = {  "id"            : serviceID,
                         "name"          : name,
+                        "username"      : username,
                         "type"          : service_type,
                         "location"      : location,
                         "cost"          : cost,
                         "description"   : description,
-                        "availability"  : 0 }
+                        "availability"  : int(availability) }
 
         try:
             #Storing the service id under its service_type for first lookup
