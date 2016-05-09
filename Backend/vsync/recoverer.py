@@ -36,7 +36,8 @@ if __name__=='__main__':
         file.close()
     if(connectMaster()):
         for kvPair in kvPairList:
-            proxy.putForRecoverer(kvPair['key'],kvPair['value'])
+            if kvPair['key'] is not None and kvPair['value'] is not None:
+                proxy.putForRecoverer(kvPair['key'],kvPair['value'])
 
 
 
