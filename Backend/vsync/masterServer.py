@@ -232,7 +232,7 @@ class MasterServer(Thread):
     def test(self,key_and_value):
         print "x gets called"
 
-    def changeServiceAvailability(self, id):
+    def changeServiceAvailability(self, service_id):
         '''
             Toggles the availability of the service
         '''
@@ -243,7 +243,7 @@ class MasterServer(Thread):
             availability = serviceObj.get("availability")
             serviceObj["availability"] = 0 if availability == 1 else 1
             print("Toggled the availability")
-            self.group.DHTPut(id, json.dumps(serviceObj))
+            self.group.DHTPut(service_id, json.dumps(serviceObj))
             return json.dumps({'status': 0, 'message':'Availability has been changed'})
         else:
             return json.dumps({'status': 1, 'message':'Service ID does not exist'})
