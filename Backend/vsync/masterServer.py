@@ -27,7 +27,7 @@ class MasterServer(Thread):
         self.group_name = "group"
 
         print "Running RPC Server on port %s" % (9000+id)
-        self.server = SimpleXMLRPCServer(("localhost", 9000 + id))
+        self.server = SimpleXMLRPCServer(("localhost", 9000 + id),allow_none=True)
         self.server.register_introspection_functions()
 
         #Registering functions to the RPC tunnel
@@ -80,6 +80,12 @@ class MasterServer(Thread):
         return self.group.DHTGet[(str,str)](key)
 
     def putForRecoverer(self,key,value):
+        print "**************************"
+        print "key"
+        print key,type(key)
+        print "value"
+        print value,type(value)
+        print "**************************"
         self.group.DHTPut(key, value)
 
     def getProvidersForServiceTypes(self, service_type):

@@ -1,0 +1,63 @@
+(lp0
+(dp1
+S'value'
+p2
+S'["1e61034c-15e8-11e6-9a0d-a45e60b9c6b3"]'
+p3
+sS'key'
+p4
+S'Plumbing'
+p5
+sa(dp6
+g2
+S'{"username": "Huang", "cost": "1000", "name": "Andy", "availability": 0, "description": "Test", "type": "Plumbing", "id": "1e61034c-15e8-11e6-9a0d-a45e60b9c6b3", "location": "Ithaca"}'
+p7
+sg4
+S'1e61034c-15e8-11e6-9a0d-a45e60b9c6b3'
+p8
+sa(dp9
+g2
+S'["0bc6b005-15e8-11e6-a914-a45e60b9c6b3", "12a1dbcf-15e8-11e6-b29b-a45e60b9c6b3", "175c40dc-15e8-11e6-bc8e-a45e60b9c6b3", "1bb9780c-15e8-11e6-bf3b-a45e60b9c6b3"]'
+p10
+sg4
+S'Gardening'
+p11
+sa(dp12
+g2
+S'{"username": "Natchaphon", "cost": "1000", "name": "Natch", "availability": 0, "description": "Test", "type": "Gardening", "id": "0bc6b005-15e8-11e6-a914-a45e60b9c6b3", "location": "Ithaca"}'
+p13
+sg4
+S'0bc6b005-15e8-11e6-a914-a45e60b9c6b3'
+p14
+sa(dp15
+g2
+S'{"username": "Mehta", "cost": "1000", "name": "Tanvi", "availability": 0, "description": "Test", "type": "Gardening", "id": "12a1dbcf-15e8-11e6-b29b-a45e60b9c6b3", "location": "Ithaca"}'
+p16
+sg4
+S'12a1dbcf-15e8-11e6-b29b-a45e60b9c6b3'
+p17
+sa(dp18
+g2
+S'{"username": "Keswani", "cost": "1000", "name": "Guarav", "availability": 0, "description": "Test", "type": "Gardening", "id": "175c40dc-15e8-11e6-bc8e-a45e60b9c6b3", "location": "Ithaca"}'
+p19
+sg4
+S'175c40dc-15e8-11e6-bc8e-a45e60b9c6b3'
+p20
+sa(dp21
+g2
+S'{"username": "Huang", "cost": "1000", "name": "Andy", "availability": 0, "description": "Test", "type": "Gardening", "id": "1bb9780c-15e8-11e6-bf3b-a45e60b9c6b3", "location": "Ithaca"}'
+p22
+sg4
+S'1bb9780c-15e8-11e6-bf3b-a45e60b9c6b3'
+p23
+sa(dp24
+g2
+Nsg4
+S'Taxi'
+p25
+sa(dp26
+g2
+Nsg4
+S'Baby Sitting'
+p27
+sa.
