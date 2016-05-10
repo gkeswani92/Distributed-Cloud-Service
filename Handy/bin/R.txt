@@ -111,7 +111,7 @@ int id linearLayout1 0x7f07002e
 int id linearLayout5 0x7f070006
 int id linearLayoutContent 0x7f070008
 int id linearLayoutSearchContent 0x7f070036
-int id linearLayoutSpacing 0x7f07003b
+int id linearLayoutSpacing 0x7f07003a
 int id logoProgress 0x7f070017
 int id message 0x7f07000e
 int id messageTableLayout 0x7f070016
@@ -127,13 +127,12 @@ int id relativeLayoutContent 0x7f070034
 int id satellite 0x7f070003
 int id scrollView1 0x7f07002d
 int id searchCell 0x7f070035
-int id serviceAvailability 0x7f07003a
-int id serviceCost 0x7f070039
+int id serviceCost 0x7f070038
+int id serviceDescription 0x7f070039
 int id serviceName 0x7f070037
-int id serviceType 0x7f070038
 int id spinnerServiceType 0x7f070014
 int id switchAvailability 0x7f070021
-int id table_seperator 0x7f07003c
+int id table_seperator 0x7f07003b
 int id terrain 0x7f070004
 int id textViewCost 0x7f07002a
 int id textViewDescription 0x7f07002b
