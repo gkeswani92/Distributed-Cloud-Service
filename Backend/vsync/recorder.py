@@ -18,9 +18,10 @@ def connectMaster():
             return False
 
 if __name__=='__main__':
+    count = 0
     if(connectMaster()):
         while True:
-            time.sleep(5) #in seconds
+            time.sleep(60) #in seconds
             for service in services:
                 print "-----------------------------------------------------------------"
                 print service
@@ -53,9 +54,10 @@ if __name__=='__main__':
             print storeList
             a = pickle.dumps(storeList)
             print type(a)
-            with open('snapshot.txt','w') as file:
+            count = count+1
+            with open('snapshot%s.txt'%count,'w') as file:
                 file.write(a)
                 file.close()
-            break
+
 
 
