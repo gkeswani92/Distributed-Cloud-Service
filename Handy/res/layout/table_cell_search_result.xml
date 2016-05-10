@@ -43,17 +43,6 @@
  		    	android:textStyle="bold" />
  			
  			<TextView
- 		    	android:id="@+id/serviceType"
- 		    	android:layout_width="wrap_content"
- 		    	android:layout_height="wrap_content"
- 		    	android:singleLine="true"
- 		    	android:ellipsize="end"
- 		    	android:text="Service Type: Gardening, Plumbing"
- 		    	android:duplicateParentState="true"
- 		    	android:textColor="@drawable/selector_color_btn_grey_white"
- 				android:textSize="14sp" />
- 		
- 			<TextView
  		    	android:id="@+id/serviceCost"
  		    	android:layout_width="wrap_content"
  		    	android:layout_height="wrap_content"
@@ -65,16 +54,16 @@
  				android:textSize="14sp" />
  			
  			<TextView
- 		    	android:id="@+id/serviceAvailability"
+ 		    	android:id="@+id/serviceDescription"
  		    	android:layout_width="wrap_content"
  		    	android:layout_height="wrap_content"
- 		    	android:singleLine="true"
+ 		    	android:maxLines="3"
  		    	android:ellipsize="end"
- 		    	android:text="Service Availability: Never!!!"
+ 		    	android:text="Description: Gardening, Plumbing"
  		    	android:duplicateParentState="true"
  		    	android:textColor="@drawable/selector_color_btn_grey_white"
  				android:textSize="14sp" />
- 		 					
+ 		
  		</LinearLayout>
 
 	</RelativeLayout>

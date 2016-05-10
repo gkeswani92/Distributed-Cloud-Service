@@ -67,9 +67,6 @@ public class SRHomeSearch extends Activity
 	    ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, R.layout.spinner_cell, categories);
 	    spinnerServiceType.setAdapter(dataAdapter);
 	    
-	    //searchResult.addView(createDirectionStepLayout("0", "Bob", "Gardening", "25", "yes"));
-	    //searchResult.addView(createDirectionStepLayout("1", "Bob", "Plumbing", "35", "yes"));
-		
 		btnSearch = (Button)findViewById(R.id.btnSearch);
 		btnSearch.setOnClickListener(new OnClickListener() {
 			@Override
@@ -137,11 +134,11 @@ public class SRHomeSearch extends Activity
 									{
 										JSONObject serviceObj = jsonArray.getJSONObject(i);
 										String name = serviceObj.optString("name");
-										String type = serviceObj.optString("type");
+										String description = serviceObj.optString("description");
 										String cost = serviceObj.optString("cost");
 										String id = serviceObj.optString("id");
-										String availability = serviceObj.optString("availability");
-										searchResult.addView(createDirectionStepLayout(id, name, type, cost, availability));
+										//String availability = serviceObj.optString("availability");
+										searchResult.addView(createDirectionStepLayout(id, name, description, cost));
 									}
 									catch (Exception e)
 									{
@@ -181,7 +178,7 @@ public class SRHomeSearch extends Activity
 		t2.start();
 	}
 	
-	public LinearLayout createDirectionStepLayout(final String id, final String name, final String type, final String cost, final String availability)
+	public LinearLayout createDirectionStepLayout(final String id, final String name, final String description, final String cost)
 	{
 		final LayoutInflater inflater = this.getLayoutInflater();
 		final LinearLayout linearLayout = (LinearLayout) inflater.inflate(R.layout.table_cell_search_result, null);
@@ -195,17 +192,15 @@ public class SRHomeSearch extends Activity
 		final RelativeLayout relativeLayout = (RelativeLayout) linearLayout.findViewById(R.id.searchCell);
 		RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) relativeLayout.getLayoutParams();
 		params.width = (int) Math.round(width * 0.93);
-		params.height = (int) Math.round(height * 0.16);
+		params.height = (int) Math.round(height * 0.18);
 		relativeLayout.setLayoutParams(params);
 		final TextView serviceName = (TextView) linearLayout.findViewById(R.id.serviceName);
-		final TextView serviceType = (TextView) linearLayout.findViewById(R.id.serviceType);
+		final TextView serviceDescription = (TextView) linearLayout.findViewById(R.id.serviceDescription);
 		final TextView serviceCost = (TextView) linearLayout.findViewById(R.id.serviceCost);
-		final TextView serviceAvailability = (TextView) linearLayout.findViewById(R.id.serviceAvailability);
 		
 		serviceName.setText("Name: " + name);
-		serviceType.setText("Service Type: " + type);
+		serviceDescription.setText("Description: " + description);
 		serviceCost.setText("Cost: $" + cost + "/hr");
-		serviceAvailability.setText("Availability: " + availability);
 		
 		// setup the custom dialog box
 		final Dialog dialog = new Dialog(SRHomeSearch.this);
