@@ -1,6 +1,7 @@
 package com.cornell.cs5412.handy;
 
 import com.cornell.cs5412.handy.gcm.GCMUtilities;
+import com.cornell.cs5412.handy.serviceprovider.SPConfirmation;
 import com.cornell.cs5412.handy.serviceprovider.SPProfile;
 import com.cornell.cs5412.handy.servicereceiver.SRHomeSearch;
 import com.cornell.cs5412.handy.servicereceiver.ServiceDetails;

@@ -67,8 +67,8 @@ public class SRHomeSearch extends Activity
 	    ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, R.layout.spinner_cell, categories);
 	    spinnerServiceType.setAdapter(dataAdapter);
 	    
-	    searchResult.addView(createDirectionStepLayout("0", "Bob", "Gardening", "25", "yes"));
-	    searchResult.addView(createDirectionStepLayout("1", "Bob", "Plumbing", "35", "yes"));
+	    //searchResult.addView(createDirectionStepLayout("0", "Bob", "Gardening", "25", "yes"));
+	    //searchResult.addView(createDirectionStepLayout("1", "Bob", "Plumbing", "35", "yes"));
 		
 		btnSearch = (Button)findViewById(R.id.btnSearch);
 		btnSearch.setOnClickListener(new OnClickListener() {
@@ -77,6 +77,9 @@ public class SRHomeSearch extends Activity
 			{
 				final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(editSearch.getWindowToken(), 0);
+				
+				//if (searchResult != null)
+					//searchResult.cle
 				
 				if(editSearch.getText().toString().equalsIgnoreCase("") || spinnerServiceType.getSelectedItemPosition() == 0)
 				{
@@ -110,7 +113,7 @@ public class SRHomeSearch extends Activity
 					Log.e("Handy", serviceLocation);
 					
 					params.add(new BasicNameValuePair("location", serviceLocation));
-					params.add(new BasicNameValuePair("serviceType", serviceType));
+					params.add(new BasicNameValuePair("type", serviceType));
 					
 					final JSONObject json = DataTransfer.getJSONResult(Globals.ipAddress + "/getService", params);
 					
@@ -145,6 +148,18 @@ public class SRHomeSearch extends Activity
 										e.printStackTrace();
 									}
 								}
+							}
+						});
+					}
+					else
+					{
+						runOnUiThread(new Runnable(){
+							public void run()
+							{
+								if (progress.isShowing())
+									progress.dismiss();
+									
+								Globals.showAlert("Error", "No service found!", SRHomeSearch.this);
 							}
 						});
 					}

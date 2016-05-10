@@ -133,17 +133,21 @@ public class SPProfile extends Activity
 					params.add(new BasicNameValuePair("serviceID", Globals.sharedPrefs.getString("serviceID")));
 					
 					final JSONObject json = DataTransfer.postJSONResult(Globals.ipAddress + "/changeServiceAvailability", params);
-
+					Log.e("Handy", "Response: " + json.toString());
 					runOnUiThread(new Runnable(){
 						public void run()
 						{
 							if (progress.isShowing())
 								progress.dismiss();
 							
-							if(json.optString("message").equalsIgnoreCase("Success"))
+							if(json.optInt("status") == 0)
 							{
 								Globals.sharedPrefs.saveBoolean("serviceAvailability", !Globals.sharedPrefs.getBoolean("serviceAvailability"));
 								Globals.showAlert("Success", "Your service availability has been changed!", SPProfile.this);
+							}
+							else
+							{
+								Globals.showAlert("Error", "An error has occurred. Please try again.", SPProfile.this);
 							}
 						}
 					});
@@ -189,7 +193,7 @@ public class SPProfile extends Activity
 							if (progress.isShowing())
 								progress.dismiss();
 							
-							if(json.optString("message").startsWith("Success"))
+							if(json.optInt("status") == 0)
 							{
 								Globals.sharedPrefs.saveBoolean("servicePosted", true);
 								Globals.sharedPrefs.saveString("serviceName", name);
