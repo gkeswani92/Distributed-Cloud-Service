@@ -52,7 +52,7 @@ class MasterServer(Thread):
 
         #First param should be a factor of the tast 2
         #Params are replication factor, expected group size, min group size
-        self.group.DHTEnable(2,4,4)
+        self.group.DHTEnable(2,6,5)
 
         #Registering functions that can be called on the VSync group
         self.group.RegisterViewHandler(Vsync.ViewHandler(self.report))
